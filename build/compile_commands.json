@@ -1,0 +1,277 @@
+[
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/AsyncLogging.cc.o -c /root/sylar/src/base/AsyncLogging.cc",
+  "file": "/root/sylar/src/base/AsyncLogging.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Condition.cc.o -c /root/sylar/src/base/Condition.cc",
+  "file": "/root/sylar/src/base/Condition.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/CountDownLatch.cc.o -c /root/sylar/src/base/CountDownLatch.cc",
+  "file": "/root/sylar/src/base/CountDownLatch.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/CurrentThread.cc.o -c /root/sylar/src/base/CurrentThread.cc",
+  "file": "/root/sylar/src/base/CurrentThread.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Date.cc.o -c /root/sylar/src/base/Date.cc",
+  "file": "/root/sylar/src/base/Date.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Exception.cc.o -c /root/sylar/src/base/Exception.cc",
+  "file": "/root/sylar/src/base/Exception.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/FileUtil.cc.o -c /root/sylar/src/base/FileUtil.cc",
+  "file": "/root/sylar/src/base/FileUtil.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/LogFile.cc.o -c /root/sylar/src/base/LogFile.cc",
+  "file": "/root/sylar/src/base/LogFile.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Logging.cc.o -c /root/sylar/src/base/Logging.cc",
+  "file": "/root/sylar/src/base/Logging.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/LogStream.cc.o -c /root/sylar/src/base/LogStream.cc",
+  "file": "/root/sylar/src/base/LogStream.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/ProcessInfo.cc.o -c /root/sylar/src/base/ProcessInfo.cc",
+  "file": "/root/sylar/src/base/ProcessInfo.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/TimeStamp.cc.o -c /root/sylar/src/base/TimeStamp.cc",
+  "file": "/root/sylar/src/base/TimeStamp.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Thread.cc.o -c /root/sylar/src/base/Thread.cc",
+  "file": "/root/sylar/src/base/Thread.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/ThreadPool.cc.o -c /root/sylar/src/base/ThreadPool.cc",
+  "file": "/root/sylar/src/base/ThreadPool.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/TimeZone.cc.o -c /root/sylar/src/base/TimeZone.cc",
+  "file": "/root/sylar/src/base/TimeZone.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base",
+  "command": "g++  -Dmrpc_base_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_base.dir/Util.cc.o -c /root/sylar/src/base/Util.cc",
+  "file": "/root/sylar/src/base/Util.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/asynclogging_test.dir/AsyncLogging_test.cc.o -c /root/sylar/src/base/tests/AsyncLogging_test.cc",
+  "file": "/root/sylar/src/base/tests/AsyncLogging_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/logging_test.dir/Logging_test.cc.o -c /root/sylar/src/base/tests/Logging_test.cc",
+  "file": "/root/sylar/src/base/tests/Logging_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/logstream_test.dir/LogStream_test.cc.o -c /root/sylar/src/base/tests/LogStream_test.cc",
+  "file": "/root/sylar/src/base/tests/LogStream_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/logstream_bench.dir/LogStream_bench.cc.o -c /root/sylar/src/base/tests/LogStream_bench.cc",
+  "file": "/root/sylar/src/base/tests/LogStream_bench.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/timezone_test.dir/TimeZone_test.cc.o -c /root/sylar/src/base/tests/TimeZone_test.cc",
+  "file": "/root/sylar/src/base/tests/TimeZone_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/countdownlatch_test.dir/CountDownLatch_test.cc.o -c /root/sylar/src/base/tests/CountDownLatch_test.cc",
+  "file": "/root/sylar/src/base/tests/CountDownLatch_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/condition_test.dir/Condition_test.cc.o -c /root/sylar/src/base/tests/Condition_test.cc",
+  "file": "/root/sylar/src/base/tests/Condition_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/mutex_test.dir/Mutex_test.cc.o -c /root/sylar/src/base/tests/Mutex_test.cc",
+  "file": "/root/sylar/src/base/tests/Mutex_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/timestamp_test.dir/TimeStamp_test.cc.o -c /root/sylar/src/base/tests/TimeStamp_test.cc",
+  "file": "/root/sylar/src/base/tests/TimeStamp_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/atomic_test.dir/Atomic_test.cc.o -c /root/sylar/src/base/tests/Atomic_test.cc",
+  "file": "/root/sylar/src/base/tests/Atomic_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/stringpiece_test.dir/StringPiece_test.cc.o -c /root/sylar/src/base/tests/StringPiece_test.cc",
+  "file": "/root/sylar/src/base/tests/StringPiece_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/thread_test.dir/Thread_test.cc.o -c /root/sylar/src/base/tests/Thread_test.cc",
+  "file": "/root/sylar/src/base/tests/Thread_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/threadpool_test.dir/ThreadPool_test.cc.o -c /root/sylar/src/base/tests/ThreadPool_test.cc",
+  "file": "/root/sylar/src/base/tests/ThreadPool_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/currentthread_test.dir/CurrentThread_test.cc.o -c /root/sylar/src/base/tests/CurrentThread_test.cc",
+  "file": "/root/sylar/src/base/tests/CurrentThread_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/base/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/date_test.dir/Date_test.cc.o -c /root/sylar/src/base/tests/Date_test.cc",
+  "file": "/root/sylar/src/base/tests/Date_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/InetAddress.cc.o -c /root/sylar/src/net/InetAddress.cc",
+  "file": "/root/sylar/src/net/InetAddress.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/SocketsOps.cc.o -c /root/sylar/src/net/SocketsOps.cc",
+  "file": "/root/sylar/src/net/SocketsOps.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Buffer.cc.o -c /root/sylar/src/net/Buffer.cc",
+  "file": "/root/sylar/src/net/Buffer.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Timer.cc.o -c /root/sylar/src/net/Timer.cc",
+  "file": "/root/sylar/src/net/Timer.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/TimerQueue.cc.o -c /root/sylar/src/net/TimerQueue.cc",
+  "file": "/root/sylar/src/net/TimerQueue.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Poller.cc.o -c /root/sylar/src/net/Poller.cc",
+  "file": "/root/sylar/src/net/Poller.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Socket.cc.o -c /root/sylar/src/net/Socket.cc",
+  "file": "/root/sylar/src/net/Socket.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Channel.cc.o -c /root/sylar/src/net/Channel.cc",
+  "file": "/root/sylar/src/net/Channel.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/EventLoop.cc.o -c /root/sylar/src/net/EventLoop.cc",
+  "file": "/root/sylar/src/net/EventLoop.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/EventLoopThread.cc.o -c /root/sylar/src/net/EventLoopThread.cc",
+  "file": "/root/sylar/src/net/EventLoopThread.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/EventLoopThreadPool.cc.o -c /root/sylar/src/net/EventLoopThreadPool.cc",
+  "file": "/root/sylar/src/net/EventLoopThreadPool.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/TcpConnection.cc.o -c /root/sylar/src/net/TcpConnection.cc",
+  "file": "/root/sylar/src/net/TcpConnection.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Acceptor.cc.o -c /root/sylar/src/net/Acceptor.cc",
+  "file": "/root/sylar/src/net/Acceptor.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/TcpServer.cc.o -c /root/sylar/src/net/TcpServer.cc",
+  "file": "/root/sylar/src/net/TcpServer.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/Connector.cc.o -c /root/sylar/src/net/Connector.cc",
+  "file": "/root/sylar/src/net/Connector.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/TcpClient.cc.o -c /root/sylar/src/net/TcpClient.cc",
+  "file": "/root/sylar/src/net/TcpClient.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/poller/DefaultPoller.cc.o -c /root/sylar/src/net/poller/DefaultPoller.cc",
+  "file": "/root/sylar/src/net/poller/DefaultPoller.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net",
+  "command": "g++  -Dmrpc_net_EXPORTS -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g -fPIC   -o CMakeFiles/mrpc_net.dir/poller/EPollPoller.cc.o -c /root/sylar/src/net/poller/EPollPoller.cc",
+  "file": "/root/sylar/src/net/poller/EPollPoller.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/echoclient_test.dir/EchoClient_test.cc.o -c /root/sylar/src/net/tests/EchoClient_test.cc",
+  "file": "/root/sylar/src/net/tests/EchoClient_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/echoserver_test.dir/EchoServer_test.cc.o -c /root/sylar/src/net/tests/EchoServer_test.cc",
+  "file": "/root/sylar/src/net/tests/EchoServer_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/inetaddress_test.dir/InetAddress_test.cc.o -c /root/sylar/src/net/tests/InetAddress_test.cc",
+  "file": "/root/sylar/src/net/tests/InetAddress_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/buffer_test.dir/Buffer_test.cc.o -c /root/sylar/src/net/tests/Buffer_test.cc",
+  "file": "/root/sylar/src/net/tests/Buffer_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/timerqueue_test.dir/TimerQueue_test.cc.o -c /root/sylar/src/net/tests/TimerQueue_test.cc",
+  "file": "/root/sylar/src/net/tests/TimerQueue_test.cc"
+},
+{
+  "directory": "/root/sylar/build/src/net/tests",
+  "command": "g++   -I/root/sylar/src/base -I/root/sylar/src/net -I/root/sylar/src/base/queue -I/root/sylar/third/libco/include  -g -DVALGRIND -DCHECK_PTHREAD_RETURN_VALUE -D_FILE_OFFSET_BITS=64 -DUSE_FULL_FILENAME -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -g   -o CMakeFiles/channel_test.dir/Channel_test.cc.o -c /root/sylar/src/net/tests/Channel_test.cc",
+  "file": "/root/sylar/src/net/tests/Channel_test.cc"
+}
+]

@@ -1,0 +1,1 @@
+g++   -O2 -DNDEBUG -g -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -O0  -rdynamic CMakeFiles/example_closure.dir/example_closure.cpp.o  -o example_closure   -L/root/sylar/lib  -Wl,-rpath,/root/sylar/lib libcolib.a -lpthread -ldl 

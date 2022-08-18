@@ -1,0 +1,2 @@
+stdout: sdfasfasdfaf
+stdout: abcedfg

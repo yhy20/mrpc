@@ -1,0 +1,1 @@
+g++   -O0 -g -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -O0   CMakeFiles/timezone_test.cc.dir/TimeZone_test.cc.o  -o ../../../../bin/tests/base/timezone_test.cc   -L/root/sylar/lib 

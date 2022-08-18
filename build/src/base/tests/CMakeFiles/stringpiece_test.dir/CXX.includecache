@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/base/StringPiece.h
+string.h
+-
+iosfwd
+-
+string
+-
+
+../src/base/Util.h
+fcntl.h
+-
+assert.h
+-
+unistd.h
+-
+sys/stat.h
+-
+mutex
+-
+vector
+-
+string
+-
+StringPiece.h
+../src/base/StringPiece.h
+
+/root/sylar/src/base/tests/StringPiece_test.cc
+vector
+-
+iostream
+-
+algorithm
+-
+Util.h
+/root/sylar/src/base/tests/Util.h
+StringPiece.h
+/root/sylar/src/base/tests/StringPiece.h
+
