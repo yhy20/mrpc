@@ -1,1 +1,0 @@
-g++   -O2 -DNDEBUG -g -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wno-unused-variable -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -O0  -rdynamic CMakeFiles/example_poll.dir/example_poll.cpp.o  -o example_poll   -L/root/sylar/lib  -Wl,-rpath,/root/sylar/lib libcolib.a -lpthread -ldl 

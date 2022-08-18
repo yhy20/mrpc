@@ -1,3 +1,4 @@
-.vscode
-build
-bin
+/.vscode
+/build
+/bin
+/lib
