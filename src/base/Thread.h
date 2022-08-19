@@ -10,6 +10,9 @@
 namespace mrpc
 {
 
+/**
+ * @brief 线程类
+ */
 class Thread : noncopyable
 {
 public:

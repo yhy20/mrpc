@@ -14,6 +14,9 @@
 namespace mrpc
 {
 
+/**
+ * @brief 线程池类
+ */
 class ThreadPool : noncopyable
 {
     typedef std::vector<std::unique_ptr<Thread>> Threads;
@@ -41,15 +44,15 @@ private:
     ThreadTask outQueue();
 
 private:
-    std::string m_name;
+    std::string         m_name;
     mutable AssertMutex m_mutex;
     Condition<AssertMutex> m_notEmpty;
     Condition<AssertMutex> m_notFull;
-    ThreadInitCallBack m_initCallBack;
-    Threads m_threads;
+    ThreadInitCallBack  m_initCallBack;
+    Threads             m_threads;
     std::deque<ThreadTask> m_queue;
-    size_t m_maxQueueSize;
-    bool m_running;
+    size_t              m_maxQueueSize;
+    bool                m_running;
 };
 
 }  // namespace mrpc

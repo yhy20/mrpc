@@ -244,12 +244,12 @@ bool TimerQueue::insert(Timer* timer)
     }
     {
         std::pair<TimerList::iterator, bool> result = 
-                            m_timers.insert(Entry(when, timer));
+                                m_timers.insert(Entry(when, timer));
         assert(result.second); (void)result;
     }
     {
         std::pair<ActiveTimerSet::iterator, bool> result =
-                            m_activeTimers.insert(ActiveTimer(timer, timer->sequence()));
+            m_activeTimers.insert(ActiveTimer(timer, timer->sequence()));
         assert(result.second); (void)result;
             
     }

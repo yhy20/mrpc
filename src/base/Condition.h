@@ -10,10 +10,17 @@
 namespace mrpc
 {
 
+/**
+ * @brief 条件变量模板类，支持 std::mutex, mrpc::Mutex, mrpc::AssertMutex
+ */
 template <typename _Mutex>
 class Condition : noncopyable
 {
 public:
+    /**
+     * @brief 构造函数
+     * @param[in] mutex 已经 lock 的 mutex 
+     */
     explicit Condition(_Mutex& mutex)
         : m_mutex(mutex)
     {
@@ -43,8 +50,8 @@ public:
     }
 
 private:
-    _Mutex& m_mutex;
-    pthread_cond_t m_pcond;
+    _Mutex&         m_mutex;    // 互斥锁
+    pthread_cond_t  m_pcond;    // 条件变量
 };
 
 template <typename _Mutex>
@@ -63,9 +70,11 @@ bool Condition<_Mutex>::waitForSeconds(double seconds)
     return ETIMEDOUT == pthread_cond_timedwait(&m_pcond, m_mutex.native_handle(), &time);
 }
 
+/// 针对 AssertMutex 的 wait 偏特化
 template <>
 void Condition<AssertMutex>::wait();
 
+/// 针对 AssertMutex 的 waitForSeconds 偏特化
 template <>
 bool Condition<AssertMutex>::waitForSeconds(double seconds);
 

@@ -53,7 +53,9 @@ private:
     sem_t m_semaphore;
 };
 
-
+/**
+ * @brief 互斥锁
+ */
 class Mutex : noncopyable
 {
 public:
@@ -89,6 +91,9 @@ private:
 template <typename _Mutex>
 class Condition;
 
+/**
+ * @brief 断言互斥锁
+ */
 class AssertMutex : noncopyable
 {
 public:
@@ -168,6 +173,9 @@ private:
     pid_t m_holder;
 };
 
+/**
+ * @brief 自旋锁
+ */
 class SpinLock : noncopyable
 {
 public:
@@ -196,6 +204,9 @@ private:
     pthread_spinlock_t m_mutex;
 };
 
+/**
+ * @brief mutex RAII class，类似于 std::lock_guard<T>
+ */
 template <typename T>
 class LockGuard
 {
@@ -215,6 +226,9 @@ private:
     T& m_mutex;
 };
 
+/**
+ * @brief mutex RAII class，类似于 std::unique_lock<T>
+ */
 template <typename T>
 class UniqueLock
 {
@@ -251,8 +265,8 @@ public:
     }
 
 private:
-    T& m_mutex;
-    bool m_locked;
+    T&      m_mutex;
+    bool    m_locked;
 };
 
 }  // namespace mrpc

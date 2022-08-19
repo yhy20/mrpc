@@ -9,11 +9,14 @@ namespace mrpc
 {
 namespace details
 {
+/**
+ * @brief Atomic Integer Class
+ */
 template <typename T>
-class AtomicIntergerT : noncopyable
+class AtomicIntegerT : noncopyable
 {
 public:
-    AtomicIntergerT() : m_value(0) { }
+    AtomicIntegerT() : m_value(0) { }
     
     T load()
     {
@@ -66,8 +69,8 @@ private:
 
 }  // namespace details
 
-typedef details::AtomicIntergerT<int64_t> AtomicInt64;
-typedef details::AtomicIntergerT<int32_t> AtomicInt32;
+typedef details::AtomicIntegerT<int64_t> AtomicInt64;
+typedef details::AtomicIntegerT<int32_t> AtomicInt32;
 
 }  // namespace mrpc
 

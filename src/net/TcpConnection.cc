@@ -56,12 +56,12 @@ TcpConnection::TcpConnection(EventLoop* loop,
       m_state(kConnecting),    
       /// 初始化时默认在 connectEstablished 中开启监听读事件 
       m_reading(true),                  
-      m_socket(new Socket(socketFd)),
-      m_channel(new Channel(loop, socketFd)),
       m_name(name.c_str()),  
       m_localAddr(localAddr),
       m_peerAddr(peerAddr),
-      m_highWaterMark(64 * 1024 * 1024)
+      m_highWaterMark(64 * 1024 * 1024),
+      m_socket(new Socket(socketFd)),
+      m_channel(new Channel(loop, socketFd))
 {
     /**
      * 设置 socketFd 上读事件发生时触发的回调。
@@ -313,12 +313,13 @@ void TcpConnection::forceClose()
     if(m_state == kConnected || m_state == kDisconnecting)
     {
         setState(kDisconnecting);
-        m_loop->queueInLoop(std::bind(&TcpConnection::forceCloseInLoop, shared_from_this()));
+        m_loop->queueInLoop(
+            std::bind(&TcpConnection::forceCloseInLoop, shared_from_this())
+        );
     }   
 }
 
-/// thread safe.
-/// 可能对象以及析构了
+/// 使用 MakeWeakCallback 是因为到时间后，TcpConnection 对象可能已经析构了
 void TcpConnection::forceCloseWithDelay(double seconds)
 {
     if(m_state == kConnected || m_state == kDisconnecting)
@@ -368,7 +369,9 @@ void TcpConnection::setTcpNoDelay(bool on)
 /// 线程安全，开始监听读事件
 void TcpConnection::startRead()
 {
-    m_loop->runInLoop(std::bind(&TcpConnection::startReadInLoop, this));
+    m_loop->runInLoop(
+        std::bind(&TcpConnection::startReadInLoop, this)
+    );
 }
 
 /// 非线程安全，仅在 loop 线程调用
@@ -409,9 +412,7 @@ void TcpConnection::connectEstablished()
     setState(kConnected);
 
     /**
-     * 此处的 tie 用于延长其 owner TcpConnection 的生命周期
-     * 经过思考， 
-     * 
+     * 此处的 tie 用于延长其 owner TcpConnection 的生命周期  
      */
     m_channel->tie(shared_from_this());
     

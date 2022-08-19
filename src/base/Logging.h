@@ -8,7 +8,9 @@ namespace mrpc
 {
 
 class TimeZone;
-
+/**
+ * @brief 日志前端类
+ */
 class Logger
 {
 public:
@@ -25,8 +27,7 @@ public:
         FATAL,
         SYSFA
     };
-
-    /// TODO: MRPC_BASE_USE_BASENAME
+    
     /**
      * @brief compile time calculation of basename of source file
      */
@@ -38,6 +39,10 @@ public:
             : m_data(str),
               m_size(N - 1)
         {
+/**
+ * USE_FULL_FILENAME 使用 __FILE__ 的绝对路径名（默认使用 basename）
+ * 日志打印出绝对路径名可以方便的使用使用 vscode 的快速跳转功能至文件功能
+ */
 #ifdef USE_FULL_FILENAME
             /// do nothing
 #else
@@ -94,9 +99,7 @@ public:
     LogStream& stream() { return m_impl.m_stream; }
 
     void format(const char* fmt, ...);
-    /**
-     * @brief 线程安全
-     */
+
     static LogLevel GetLogLevel();
     
     /**

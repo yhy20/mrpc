@@ -8,6 +8,9 @@
 namespace mrpc
 {
 
+/**
+ * @brief 精度为微妙级别的时间戳类
+ */
 class TimeStamp : public copyable
 {
 public:

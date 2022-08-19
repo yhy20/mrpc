@@ -26,8 +26,8 @@ public:
     }
 
 private:
-    std::string m_message;
-    std::string m_stack;
+    std::string m_message;  // 错误信息
+    std::string m_stack;    // 当前调用堆栈
 };
 
 }  // namespace mrpc

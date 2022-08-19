@@ -72,10 +72,10 @@ private:
     static void cookieEnd();
 
 private:
-    void (*m_cookie)();
+    void    (*m_cookie)();
     // thread_local static char m_data[SIZE];
-    char m_data[SIZE];
-    char* m_cur;
+    char    m_data[SIZE];
+    char*   m_cur;
 };
 
 }  // namespace details

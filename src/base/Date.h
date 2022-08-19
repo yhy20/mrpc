@@ -8,7 +8,11 @@ struct tm;
 
 namespace mrpc
 {
-
+/**
+ * @brief 日历类
+ * @details Date 以 julianDayNumber 为基准进行计算，是对 tm 的一种替代
+ * 
+ */
 class Date : public copyable
 {
 public:
@@ -22,13 +26,30 @@ public:
     static const int s_daysPerweek = 7;
     static const int s_julianDayOf1970_01_01;
 
+    /**
+     * @brief 构造一个非法的 Date
+     */
     Date() : m_julianDayNumber(0) { }
 
+    /**
+     * @brief 以 yyyy-mm-dd 格式构造一个 Date
+     * 
+     * @param[in] year 年 
+     * @param[in] month 月
+     * @param[in] day 日
+     */
     Date(int year, int month, int day);
 
+    /**
+     * @brief 以 Julian Day Number 构造一个 Date
+     * @param[in] julianDayNumber Julian Day Number
+     */
     explicit Date(int julianDayNumber) 
         : m_julianDayNumber(julianDayNumber) { }
 
+    /**
+     * @brief 通过 struct tm 构造一个 Date 
+     */
     explicit Date(const struct tm&);
 
     void swap(Date& rhs)
@@ -43,8 +64,11 @@ public:
      */
     std::string toIsoString() const;
 
+    /**
+     * @brief 由 Date 返回 struct YearMonthDay
+     */
     struct YearMonthDay yearMonthDay() const;
-
+    
     int year() const
     {
         return yearMonthDay().year;

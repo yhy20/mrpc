@@ -68,7 +68,7 @@ public:
         m_running = false;
         /// 直接唤醒等待的条件变量
         m_bufferFull.notify();
-        /// 
+         
         m_thread.join();
     }
 

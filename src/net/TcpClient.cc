@@ -30,11 +30,11 @@ TcpClient::TcpClient(EventLoop* loop,
     : m_loop(CHECK_NOTNULL(loop)),
       m_connector(new Connector(loop, serverAddr)),
       m_name(name.c_str()),
-      m_connectionCallback(DefaultConnectionCallback),
-      m_messageCallback(DefaultMessageCallback),
+      m_nextConnId(1),
       m_retry(false),
       m_connect(true),
-      m_nextConnId(1)
+      m_connectionCallback(DefaultConnectionCallback),
+      m_messageCallback(DefaultMessageCallback)
 {
     m_connector->setNewConnectionCallback(
         std::bind(&TcpClient::newConnection, this, _1)
@@ -82,13 +82,14 @@ void TcpClient::connect()
 {
     LOG_INFO << "TcpClient::connect[" << m_name << "] - connecting to "
              << m_connector->serverAddress().toIpPort();
-    m_connect = true;
+
+    m_connect.store(true, std::memory_order_relaxed);
     m_connector->start();
 }
 
 void TcpClient::disconnect()
 {
-    m_connect = false;
+    m_connect.store(false, std::memory_order_relaxed);
 
     {
         LockGuard<Mutex> lock(m_mutex);
@@ -101,10 +102,11 @@ void TcpClient::disconnect()
 
 void TcpClient::stop()
 {
-    m_connect = false;
+    m_connect.store(false, std::memory_order_relaxed);
     m_connector->stop();
 }
 
+/// Not thread safe but only run in loop thread.
 void TcpClient::newConnection(int socketFd)
 {
     m_loop->assertInLoopThread();
@@ -115,16 +117,20 @@ void TcpClient::newConnection(int socketFd)
     std::string connName = m_name + buf;
     InetAddress localAddr(sockets::GetLocalAddr(socketFd));
 
-    TcpConnectionPtr conn(
-        new TcpConnection(m_loop, connName, socketFd, localAddr, peerAddr)
-    );
+    TcpConnectionPtr conn = 
+        std::make_shared<TcpConnection>(m_loop, connName, socketFd, localAddr, peerAddr);
+
+    // TcpConnectionPtr conn(
+    //     new TcpConnection(m_loop, connName, socketFd, localAddr, peerAddr)
+    // );
 
     conn->setConnectionCallback(m_connectionCallback);
     conn->setMessageCallback(m_messageCallback);
     conn->setWriteCompleteCallback(m_writeCompleteCallback);
 
     conn->setCloseCallback(
-        std::bind(&TcpClient::removeConnection, this, _1));
+        std::bind(&TcpClient::removeConnection, this, _1)
+    );
     
     {
         LockGuard<Mutex> lock(m_mutex);
@@ -147,7 +153,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
         std::bind(&TcpConnection::connectDestroyed, conn)
     );
 
-    if(m_retry && m_connect)
+    if(m_retry.load(std::memory_order_relaxed) && m_connect)
     {
         LOG_INFO << "TcpClient::connect[" << m_name << "] - Reconnectin to "
                     << m_connector->serverAddress().toIpPort();
