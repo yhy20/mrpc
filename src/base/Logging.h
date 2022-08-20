@@ -41,7 +41,7 @@ public:
         {
 /**
  * USE_FULL_FILENAME 使用 __FILE__ 的绝对路径名（默认使用 basename）
- * 日志打印出绝对路径名可以方便的使用使用 vscode 的快速跳转功能至文件功能
+ * 日志打印出绝对路径名可以方便的使用 vscode 的快速跳转功能至文件功能
  */
 #ifdef USE_FULL_FILENAME
             /// do nothing
