@@ -5,13 +5,18 @@
 #include <string>
 #include <google/protobuf/service.h>
 #include "google/protobuf/descriptor.h"
-#include <muduo/net/TcpServer.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/InetAddress.h>
-#include <muduo/net/TcpConnection.h>
-#include <muduo/base/Timestamp.h>
+#include "TcpServer.h"
+#include "EventLoop.h"
+#include "InetAddress.h"
+#include "TcpConnection.h"
+#include "TimeStamp.h"
 
-// 框架提供的 rpc 服务发布对象
+namespace mrpc
+{
+
+/**
+ * @brief 框架提供的 rpc 服务提供类
+ */
 class RpcProvider 
 {
 public:
@@ -23,19 +28,19 @@ public:
 
 private:
     // Acceptor 回调，用于建立新的连接或被动释放连接
-    void OnConnection(const muduo::net::TcpConnectionPtr& conn);
+    void OnConnection(const net::TcpConnectionPtr& conn);
 
     // TcpConnection 回调，用于响应已连接的 TcpConnection 的读写事件
-    void OnMessage(const muduo::net::TcpConnectionPtr& conn, 
-                   muduo::net::Buffer *buffer,
-                   muduo::Timestamp time);
+    void OnMessage(const net::TcpConnectionPtr& conn, 
+                   net::Buffer *buffer,
+                   TimeStamp time);
     
     // Closure 回调，用于框架 response 报文的序列化和网络发送
-    void SendRpcResponse(const muduo::net::TcpConnectionPtr& conn, google::protobuf::Message* response);
+    void SendRpcResponse(const net::TcpConnectionPtr& conn, google::protobuf::Message* response);
 
 private:
     // 事件循环
-    muduo::net::EventLoop m_loop;
+    net::EventLoop m_loop;
 
     // 存储 Service 服务对象的相关信息
     struct ServiceInfo
@@ -48,4 +53,6 @@ private:
     std::map<std::string, ServiceInfo> m_serviceMap;
 };
 
-#endif
+}  // namespace mrpc
+
+#endif  // __RPC_PROVIDER_H__

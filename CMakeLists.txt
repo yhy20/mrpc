@@ -87,6 +87,6 @@ link_directories(${PROJECT_SOURCE_DIR}/third/libco/lib)
 
 # src 中包含了 mprpc 框架的所有相关代码
 add_subdirectory(src)
-
+add_subdirectory(example)
 # example 中包含了 mprpc 框架使用的示例代码
 # add_subdirectory(example)

@@ -2,30 +2,34 @@
 #define __MPRPC_H__
 
 #include <memory>
-#include "MrpcChannel.hpp"
-#include "MrpcController.hpp"
-#include "ConfigFileReader.hpp"
-#include "RpcProvider.hpp"
-#include "Logger.hpp" 
+
+#include "Logging.h"
+#include "RpcProvider.h"
+#include "MrpcChannel.h"
+#include "StringPiece.h"
+#include "MrpcController.h"
+#include "ConfigFileReader.h"
+
+namespace mrpc
+{
 
 // mprpc 框架的基础类，负责一些初始化操作 
-class Mrpc
+class Mrpc : noncopyable
 {
 public:
-    static void Init(int argc, char* argv[]);
+    static void Init(StringArg configFile);
     static Mrpc& GetInstance();
     static CConfigFileReader& GetConfig();
    
 private:
     Mrpc(){}
     ~Mrpc(){}
-    Mrpc(Mrpc& rhs) = delete;
-    Mrpc(Mrpc&& rhs) = delete;
-    Mrpc& operator=(const Mrpc& rhs) = delete;
     static void ShowHelp(const char* name);
 
 private:
     static CConfigFileReader m_config;
 };
 
-#endif
+}  // namespace mrpc
+
+#endif  // __MPRPC_H__

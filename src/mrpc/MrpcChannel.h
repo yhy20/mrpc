@@ -3,6 +3,9 @@
 
 #include <google/protobuf/service.h>
 
+namespace mrpc
+{
+
 class MrpcChannel : public google::protobuf::RpcChannel
 {
 public:
@@ -13,4 +16,6 @@ public:
                             google::protobuf::Closure* done) override;
 };
 
-#endif 
+}  // namespace mrpc
+
+#endif  // __MRPC_CHANNEL_H__

@@ -1,4 +1,12 @@
-aux_source_directory(../base BASE_LIST)
-aux_source_directory(. MRPC_LIST)
-add_library(mrpc ${MRPC_LIST} ${BASE_LIST})
-target_link_libraries(mrpc libmuduo_net.a libmuduo_base.a protobuf pthread)
+# aux_source_directory(. MRPC_LIST)
+
+set(mrpc_SRCS
+    Mrpc.cc
+    MrpcChannel.cc
+    MrpcController.cc
+    RpcHeader.pb.cc
+    RpcProvider.cc)
+
+# add_library(mrpc_base ${base_SRCS})
+add_library(mrpc SHARED ${mrpc_SRCS})
+target_link_libraries(mrpc mrpc_net mrpc_base protobuf pthread)

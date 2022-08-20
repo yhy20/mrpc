@@ -4,6 +4,9 @@
 #include <google/protobuf/service.h>
 #include <string>
 
+namespace mrpc
+{
+
 class MrpcController : public google::protobuf::RpcController
 {
 public:
@@ -22,4 +25,6 @@ private:
     std::string m_errText ; // RPC方法执行过程中的错误信息
 };
 
-#endif
+}  // namespace mrpc
+
+#endif  // __MRPC_CONTROLLER__

@@ -3,13 +3,19 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
 #include <string>
-#include "google/protobuf/descriptor.h"
-#include "google/protobuf/message.h"
-#include "MrpcChannel.hpp"
-#include "RpcHeader.pb.hpp"
-#include "MrpcController.hpp"
-#include "Mrpc.hpp"
+
+#include "MrpcChannel.h"
+#include "RpcHeader.pb.h"
+#include "MrpcController.h"
+#include "Mrpc.h"
+
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/message.h>
+
+namespace mrpc
+{
 
 /*
     header_size + service_name + args_size + args
@@ -120,3 +126,5 @@ void MrpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
         return;
     }
 }
+
+}  // namespace mrpc

@@ -1,4 +1,4 @@
-#include "MrpcController.hpp"
+#include "MrpcController.h"
 
 MrpcController::MrpcController() : m_failed(false), m_errText(""){}
 

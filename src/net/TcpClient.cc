@@ -14,7 +14,9 @@ namespace details
 {
 void RemoveConnection(EventLoop* loop, const TcpConnectionPtr& conn)
 {
-    
+    loop->queueInLoop(
+        std::bind(&TcpConnection::connectDestroyed, conn)
+    );
 }
 
 void RemoveConnector(const ConnectorPtr& connector)
@@ -64,7 +66,8 @@ TcpClient::~TcpClient()
 
         CloseCallback cb = std::bind(&details::RemoveConnection, m_loop, _1);
         m_loop->runInLoop(
-            std::bind(&TcpConnection::setCloseCallback, conn, cb));
+            std::bind(&TcpConnection::setCloseCallback, conn, cb)
+        );
         
         if(unique)
         {
@@ -147,6 +150,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
     {
         LockGuard<Mutex> lock(m_mutex);
         assert(m_connection == conn);
+        m_connect.reset();
     }
 
     m_loop->queueInLoop(

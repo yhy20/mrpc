@@ -1,40 +1,41 @@
 #include <thread>
-#include "RpcProvider.hpp"
-#include "RpcHeader.pb.hpp"
+#include "RpcProvider.h"
+#include "RpcHeader.pb.h"
 #include "Mrpc.hpp"
 
+namespace mrpc
+{
 
 // 注册 rpc 服务
 void RpcProvider::RegisterService(google::protobuf::Service *service)
 {
-    ServiceInfo service_info;
+    ServiceInfo serviceInfo;
     // 获取服务对象的描述信息
-    const google::protobuf::ServiceDescriptor* service_desc = service->GetDescriptor();
+    const google::protobuf::ServiceDescriptor* serviceDesc = service->GetDescriptor();
     // 获取服务的名字
-    std::string service_name =  service_desc->name();
+    std::string serviceName = serviceDesc->name();
     // 获取服务对象方法的数量
-    int method_count = service_desc->method_count();
+    int methodCount = serviceDesc->method_count();
 
     // debug
     // std::cout << "service_name = " << service_name << std::endl;
 
     // 定义服务方法描述变量
-    const google::protobuf::MethodDescriptor* method_desc;
-    for(int i = 0; i < method_count; ++i)
+    const google::protobuf::MethodDescriptor* methodDesc;
+    for(int i = 0; i < methodCount; ++i)
     {   
         // 获取服务对象指定下标的服务方法的描述
-        method_desc = service_desc->method(i);
-        std::string method_name = method_desc->name();
-        service_info.m_methodMap.insert({method_name, method_desc});
+        methodDesc = serviceDesc->method(i);
+        std::string methodName = methodDesc->name();
+        serviceInfo.m_methodMap.insert({methodName, methodDesc});
        
         // debug
         // std::cout << "method_name = " << method_name << std::endl;
     }   
 
     // 注册 Service 服务对象
-    // Fixed：指针指向内存空间的释放
     service_info.m_service = service;
-    m_serviceMap.insert({service_name, std::move(service_info)});
+    m_serviceMap.insert({serviceName, std::move(serviceInfo)});
 }
 
 // 启动 rpc 服务节点，开始提供 rpc 远程网络调用服务
@@ -42,19 +43,21 @@ void RpcProvider::Run()
 {
     std::string ip = Mrpc::GetConfig().getConfigName("rpcserverip");
     uint16_t port = atoi(Mrpc::GetConfig().getConfigName("rpcserverport"));
-    muduo::net::InetAddress address(ip, port);
+    net::InetAddress address(ip, port);
 
     // 创建 TcpServer 对象
-    muduo::net::TcpServer server(&m_loop, address, "RpcProvider");
+    net::TcpServer server(&m_loop, address, "RpcProvider");
 
     // 注册 Acceptor 回调
     server.setConnectionCallback(
-        std::bind(&RpcProvider::OnConnection, this, std::placeholders::_1));
+        std::bind(&RpcProvider::OnConnection, this, std::placeholders::_1)
+    );
 
     // 注册 TcpConnection 回调                
     server.setMessageCallback(
         std::bind(&RpcProvider::OnMessage, this,
-        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
+    );
 
     // 设置线程池中线程的数目
     unsigned int hardware_threads = std::thread::hardware_concurrency();
@@ -175,3 +178,5 @@ void RpcProvider::SendRpcResponse(const muduo::net::TcpConnectionPtr& conn, goog
     conn->send(response_str);
     conn->shutdown();
 }
+
+}  // namespace mrpc

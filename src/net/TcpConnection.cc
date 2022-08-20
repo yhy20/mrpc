@@ -156,7 +156,8 @@ void TcpConnection::send(const StringPiece& message)
                 &TcpConnection::sendInLoop;
 
             m_loop->runInLoop(
-                std::bind(func, this, message.as_string()));
+                std::bind(func, this, message.as_string())
+            );
         }
     }
 }
@@ -177,7 +178,8 @@ void TcpConnection::send(Buffer* buf)
                 &TcpConnection::sendInLoop;
 
             m_loop->runInLoop(
-                std::bind(func, this, buf->retrieveAllAsString()));
+                std::bind(func, this, buf->retrieveAllAsString())
+            );
         }
     }
 }
