@@ -150,7 +150,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
     {
         LockGuard<Mutex> lock(m_mutex);
         assert(m_connection == conn);
-        m_connect.reset();
+        m_connection.reset();
     }
 
     m_loop->queueInLoop(
@@ -160,7 +160,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
     if(m_retry.load(std::memory_order_relaxed) && m_connect)
     {
         LOG_INFO << "TcpClient::connect[" << m_name << "] - Reconnectin to "
-                    << m_connector->serverAddress().toIpPort();
+                 << m_connector->serverAddress().toIpPort();
         m_connector->restart();
     }
 }

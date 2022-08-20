@@ -1,10 +1,3 @@
-/**
- * @Author: yhy
- * @Date: 2022-08-16 16:52:05
- * @LastEditors: yhy
- * @LastEditTime: 2022-08-16 17:07:44
- */
-
 #include <poll.h>
 #include <errno.h>
 #include <assert.h>

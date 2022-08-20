@@ -41,7 +41,6 @@ public:
 
     void write(const StringPiece& message)
     {
-        printf("in write!\n");
         LockGuard<Mutex> lock(m_mutex);
         if(m_connectoin)
         {
@@ -97,6 +96,11 @@ int main(int argc, char* argv[])
         {
             client.write(line);
         }
+        // char msg[] = "hello!";
+        // client.write(msg);
+
+        // Util::SleepSec(100000);
+
         client.disconnect();
         Util::SleepSec(1);
     }

@@ -1,10 +1,3 @@
-/*
- * @Author: yhy
- * @Date: 2022-08-02 20:54:06
- * @LastEditors: yhy
- * @LastEditTime: 2022-08-02 20:55:15
- * @Description: 
- */
 #include <stdio.h>
 
 #include "Poller.h"

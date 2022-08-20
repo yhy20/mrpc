@@ -17,11 +17,9 @@ public:
                    mrpc::net::Buffer* buf,
                    mrpc::TimeStamp receiveTime)
     {
-        printf("in message callback\n");
         while(buf->readableBytes() >= kHeaderLen)
         {
-            int32_t len = mrpc::net::sockets::NetworkToHost32(buf->peekInt32());
-            printf("len = %d\n", len);
+            int32_t len = buf->peekInt32();
             if(len > 65536 || len < 0)
             {
                 LOG_ERROR << "Invalid lenght " << len;
@@ -48,9 +46,7 @@ void send(mrpc::net::TcpConnection* conn,
     mrpc::net::Buffer buf;
     buf.append(message.data(), message.size());
     int32_t len = static_cast<int32_t>(message.size());
-    printf("len = %d\n", len);
     int32_t be32 = mrpc::net::sockets::HostToNetwork32(len);
-    printf("buffer size = %ld\n", buf.readableBytes());
     buf.prepend(&be32, sizeof(be32));
     conn->send(&buf);
 }

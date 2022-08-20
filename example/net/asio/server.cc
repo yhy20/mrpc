@@ -23,7 +23,6 @@ public:
         m_server.setConnectionCallback(
             std::bind(&ChatServer::onConnection, this, _1)
         );
-        printf("in const!\n");
         m_server.setMessageCallback(
             std::bind(&LengthHeaderCodec::onMessage, &m_codec, _1, _2, _3)
         );
@@ -70,7 +69,7 @@ private:
 
 int main(int argc, char* argv[])
 {   
-    Logger::SetLogLevel(Logger::TRACE);
+    // Logger::SetLogLevel(Logger::TRACE);
     LOG_INFO << "pid = " << getpid();
     if(argc > 1)
     {

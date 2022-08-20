@@ -87,7 +87,7 @@ void RpcProvider::OnMessage(const muduo::net::TcpConnectionPtr& conn,
                             muduo::Timestamp time)
 {
     // 从网络上接收的远程 rpc 调用请求的字符流
-    std::string request_str = buffer->retrieveAllAsString();
+    std::string request = buffer->retrieveAllAsString();
 
     // rpc 调用的服务器、客户端应当协商好通信使用的 protobuf 数据类型
     // 通过定义 protobuf 的 message 类型进行序列化和反序列化 （service_name, method_name, args）

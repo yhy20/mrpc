@@ -1,15 +1,17 @@
-#ifndef __RPC_PROVIDER_H__
-#define __RPC_PROVIDER_H__
+#ifndef __MRPC_PROVIDER_H__
+#define __MRPC_PROVIDER_H__
 
 #include <map>
 #include <string>
-#include <google/protobuf/service.h>
-#include "google/protobuf/descriptor.h"
+
 #include "TcpServer.h"
 #include "EventLoop.h"
+#include "TimeStamp.h"
 #include "InetAddress.h"
 #include "TcpConnection.h"
-#include "TimeStamp.h"
+
+#include <google/protobuf/service.h>
+#include <google/protobuf/descriptor.h>
 
 namespace mrpc
 {
@@ -55,4 +57,4 @@ private:
 
 }  // namespace mrpc
 
-#endif  // __RPC_PROVIDER_H__
+#endif  // __MRPC_PROVIDER_H__
