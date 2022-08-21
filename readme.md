@@ -8,7 +8,7 @@
 
 #### ThreadSafeQueue
 
-`ThreadSafeQueue` 类是参考《C++并发编程实践》实现的细粒度锁版的线程安全队列，该队列用在了后续实现的 `CAsyncLog `类中，`ThreadSafeQueue` 类在入队方面提供了值拷贝的 `push` 入队函数和右值引用移动的 `movePush` 入队函数，在出队方面提供了阻塞出队和非阻塞出队两类共四组函数，并依据线程安全数据结构的惯例将 top 与 pop 这一对天然 race condition 的接口合并了，这些函数的原型分别是：
+`ThreadSafeQueue` 类是参考《C++并发编程实践》实现的细粒度锁版的线程安全队列，该队列用在了后续实现的 `CAsyncLog `类中，`ThreadSafeQueue` 类在入队方面提供了值拷贝的 `push` 入队函数和右值引用移动的 `movePush` 入队函数，在出队方面提供了阻塞出队和非阻塞出队两类共四组函数，并依据线程安全数据结构的惯例将 `top`与 `pop`这一对天然 race condition 的接口合并了，这些函数的原型分别是：
 
 ```c++
 /// 使用拷贝构造函数 copy 传参进行 push
@@ -25,7 +25,7 @@ bool tryPop(T& data);
 std::shared_ptr<T> tryPop(); 
 ```
 
-在思考后，最终保留了 `empty`函数，这意味着经典问题 `empty`与 `pop` 的 race condition 没有解决，用户依然有使用错误的可能。一般情况下使用线程安全数据结构是为了不在外部使用其他的锁，所以下面是一种使用队列可能的情况。
+在思考后，最终保留了 `empty`函数，这意味着经典问题 `empty `与 `pop` 的 race condition 没有解决，用户依然有使用错误的可能。一般情况下使用线程安全数据结构是为了不在外部使用其他的锁，所以下面是一种使用队列可能的情况。
 
 ```c++
 void ThreadTask()
@@ -44,15 +44,15 @@ void ThreadTask()
 
 #### ConcurrentQueue
 
-`ConcurrentQueue` 类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]()
+`ConcurrentQueue`类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]()
 
 #### BlockingQueue
 
-`BlockingQueue` 是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改
+`BlockingQueue`是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改
 
 #### BoundedBlockingQueue
 
- 是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改
+`BoundedBlockingQueue`类是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改
 
 ### Logging 中的修改
 
@@ -81,7 +81,7 @@ void ThreadTask()
 #define CLOG_SYSFATAL(fmt, ...) mrpc::Logger(__FILE__, __LINE__, mrpc::Logger::SYSFA).format(fmt, ##__VA_ARGS__)
 ```
 
-不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf` 函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null` 对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 `FILE `流，两者的区别其实很简单，即 `FILE` 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类 `LogFile` 将日志信息非线程安全的写到当前目录下的 `test_log_st` 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类 `LogFile`  将日志信息线程安全（即加锁）的写到当前目录下的 `test_log_mt` 文件。详细代码见 `src/base/tests/Logging_test.cc`
+不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf` 函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null `对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 `FILE` 流，两者的区别其实很简单，即 `FILE` 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类 `LogFile` 将日志信息非线程安全的写到当前目录下的 `test_log_st` 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类 `LogFile`  将日志信息线程安全（即加锁）的写到当前目录下的 `test_log_mt` 文件。详细代码见 `src/base/tests/Logging_test.cc`
 
 ```C++
 /// C++ 风格日志宏的输出测试代码
@@ -325,9 +325,22 @@ void Test3()
 
 ### CAsyncLog 类
 
-`CAsyncLog` 是一个基于 `ThreadSafeQueue` 实现轻量的备用 C 风格异步日志类，可以满足写测试程序，debug 文件等一些简单的需求，该类是由开源软件 flamingo 的异步日志修改而来。
+`CAsyncLog` 是一个基于 `ThreadSafeQueue` 实现轻量的备用 C 风格异步日志类，可以满足写测试程序，debug 文件等一些简单的需求，该类是由开源软件 flamingo 的异步日志修改而来，也是我实现的第一个异步日志类，关于 flamingo，见 [https://github.com/balloonwj/flamingo]()
+
+#### AsyncLogging
 
 ## net 模块
+
+### Channel 类中的问题讨论
+
+#### (1) 多线程下 C++ 对象生命周期管理问题
+
+
+#### (2) Epoll 全事件触发情况分析和测试
+
+
+
+Acceptor 中关于 fd 耗尽问题的讨论
 
 ## **learn 目录**
 
