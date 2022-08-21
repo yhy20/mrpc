@@ -48,11 +48,11 @@ void ThreadTask()
 
 #### BlockingQueue
 
-`BlockingQueue`是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改
+`BlockingQueue`是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改。
 
 #### BoundedBlockingQueue
 
-`BoundedBlockingQueue`类是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改
+`BoundedBlockingQueue`类是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改。
 
 ### Logging 中的修改
 
@@ -335,7 +335,7 @@ void Test3()
 
 #### (1) 多线程下 C++ 对象生命周期管理问题
 
-C++ 中一个无法回避的问题是对象生命周期管理的问题，这个问题变相的也是内存管理问题，一般情况下通过 RAII 编程技法和智能指针能够解决大部分问题，不过在多线程情况下对象的析构更为复杂了，一方面如果一个线程可以被多个线程使用，则在一个线程调用过程中对象被另一个线程析构了将很可能导致程序崩溃，另一方面有时候需要延长对象的生命周期。muduo 库提供了一种解决思路，即 tie 函数，tie 实际上是一个冗余的 shared_ptr 指针，用于保护或延长特定对象的生命周期。在 muduo 中，当对端 TCP 连接断开时会触发 Channel::handleEvent() 调用，而 handleEvent 中会调用用户提供的 CloseCallback，而用户的代码在 CloseCallback 中可能会析构 TcpConnection 对象并导致 Channel 对象被析构，此时会造成 Channel::handleEvent() 执行到一半的时候，其所属的 Channel 对象本身被销毁了，这时程序会 core dump，而 tie 就可以起到保护作用。
+C++ 中一个无法回避的问题是对象生命周期管理的问题，这个问题变相的也是内存管理问题，一般情况下通过 RAII 编程技法和智能指针能够解决大部分问题，不过在多线程情况下对象的析构更为复杂了，一方面如果一个线程可以被多个线程使用，则在一个线程调用过程中对象被另一个线程析构了将很可能导致程序崩溃，另一方面有时候需要延长对象的生命周期。muduo 库提供了一种解决思路，即 tie 函数，tie 实际上是一个冗余的 shared_ptr 指针，用于保护或延长特定对象的生命周期。在 muduo 中，当对端 TCP 连接断开时会触发 `Channel::handleEvent()` 调用，而 `handleEvent` 中会调用用户提供的 `CloseCallback`，而用户的代码在 `CloseCallback` 中可能会析构 `TcpConnection` 对象并导致 Channel 对象被析构，此时会造成 `Channel::handleEvent()` 执行到一半的时候，其所属的 Channel 对象本身被销毁了，这时程序会 core dump，而 tie 就可以起到保护作用。
 
 #### (2) Epoll 全事件触发情况分析和测试
 
@@ -365,19 +365,19 @@ C++ 中一个无法回避的问题是对象生命周期管理的问题，这个�
 Epoll 所有事件触发情况分析:
 
 1. `EPOLLIN`: 在 epollfd 上注册该事件，对端数据正常到达或对端正常关闭
-   `EPOLLIN` 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下的 EPOLLIN test1 和 test2
+   `EPOLLIN` 事件触发的详细测试代码见 `src/learn/iomultiplexing/epoll_thread` 目录下的 EPOLLIN test1 和 test2
 2. `EPOLLOUT`: 在 epollfd 上注册该事件，内核写缓冲区（缓冲区大小取决于 TCP 窗口和拥塞控制）空闲或 fd 非阻塞
-   `EPOLLOUT` 事件触发的详细测试代码见 ` src/learn/iomultiplexing` 目录下的 EPOLLOUT_test1.cc
+   `EPOLLOUT` 事件触发的详细测试代码见 ` src/learn/iomultiplexing/epoll_thread` 目录下的 EPOLLOUT_test1.cc
 3. `EPOLLRDHUP`: 在 epollfd 上注册该事件，对端正常关闭，本端调用 `shutdown(fd, SHUT_RD);`
-   `EPOLLRDHUP` 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下 EPOLLRDHUP test1、test2 和 test3
+   `EPOLLRDHUP` 事件触发的详细测试代码见 `src/learn/iomultiplexing/epoll_thread` 目录下 EPOLLRDHUP test1、test2 和 test3
 4. `EPOLLHUP`: 监听的 socketfd 尚未建立连接、对端调用 `shutdown(fd, SHUT_WR)` 或 `close(fd)` 且本端调用 `shutdown(fd, SHUT_RD)`，本端调用 `shutdown(fd, SHUT_RDWR)` 或 `shutdown(fd, SHUT_RD)` + `shutdown(fd, SHUT_WR)`
-   EPOLLHUP 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下 EPOLLHUP test1、test2、test3 和 test4
+   EPOLLHUP 事件触发的详细测试代码见 `src/learn/iomultiplexing/epoll_thread` 目录下 EPOLLHUP test1、test2、test3 和 test4
 
 ### Acceptor 中关于 fd 耗尽的问题
 
 Read the section named "The special problem of accept()ing when you can't" in libev's doc by Marc Lehmann, author of libev. 原文的意思大致如下:
 
-在大型服务器中，经过会出现描述符用完（通常是 linux 的资源限制导致的）的情况，这会导致 accept() 失败，并返还一个 ENFILE 错误，但是内核并没有拒绝这个连接，连接仍然在连接队列中，这导致在下一次迭代的时候，仍然会触发监听描述符的可读事件，最终造成程序 busy loop。一种简单的处理方式就是当程序遇到这种问题就直接忽略掉，直到这种情况消失，显然这种方法将会导致 busy waiting，一种比较好的处理方式就是记录除了 EAGAIN 或 EWOULDBLOCK 其他任何错误，告诉用户出现了某种错误，并停止监听描述符的可读事件，减少 CPU 的使用。如果程序是单线程的，我们可以先 open /dev/null，保留一个描述符，当 accept() 出现 ENFILE 或 EMFILE 错误的时候，close 掉 /dev/null 这个 fd，然后 accept，再 close 掉 accept 产生的 fd，然后再次 open /dev/null，这是一种比较优雅的方式来拒绝掉客户端的连接。最后一种方式则是遇到 accept() 的这种错误，直接拒绝并退出，但是显然这种方式很容易受到 Dos 攻击。而 Acceptor 对象仅在 Acceptor 线程中受理客户端连接，符合上述单线程优雅处理方式。
+在大型服务器中，经过会出现描述符用完（通常是 linux 的资源限制导致的）的情况，这会导致 accept() 失败，并返还一个 ENFILE 错误，但是内核并没有拒绝这个连接，连接仍然在连接队列中，这导致在下一次迭代的时候，仍然会触发监听描述符的可读事件，最终造成程序 busy loop。一种简单的处理方式就是当程序遇到这种问题就直接忽略掉，直到这种情况消失，显然这种方法将会导致 `busy waiting`，一种比较好的处理方式就是记录除了 EAGAIN 或 EWOULDBLOCK 其他任何错误，告诉用户出现了某种错误，并停止监听描述符的可读事件，减少 CPU 的使用。如果程序是单线程的，我们可以先 open /dev/null，保留一个描述符，当 accept() 出现 ENFILE 或 EMFILE 错误的时候，close 掉 /dev/null 这个 fd，然后 accept，再 close 掉 accept 产生的 fd，然后再次 open /dev/null，这是一种比较优雅的方式来拒绝掉客户端的连接。最后一种方式则是遇到 accept() 的这种错误，直接拒绝并退出，但是显然这种方式很容易受到 Dos 攻击。而 Acceptor 对象仅在 Acceptor 线程中受理客户端连接，符合上述单线程优雅处理方式。
 
 ### EventLoop 中关于 SIGPIPE 信号的处理
 
