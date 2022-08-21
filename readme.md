@@ -1,20 +1,60 @@
 ## 缘起
 
-最初想根据教学视频实现一个 muduo + protobuf 的 RPC 调用服务，后来觉得只是使用而不知其所以然不太舒服，遂梳理、重写了 muduo 库，并修改了部分内容，目前 RPC 部分尚未完成，muduo 库框架部分已全部完成，所有的测试单元都已重写。
+最初想根据教学视频实现一个 muduo + protobuf 的 RPC 调用服务，后来觉得只是使用而不知其所以然不太舒服，遂梳理、重写了 muduo 库，并修改了部分内容，目前 RPC 部分尚未完成，muduo 库框架部分已全部完成，大多数的测试单元都已重写。
 
 ## base 模块
 
-#### queue 目录的修改
+### queue 目录
 
-(1) `ThreadSafeQueue `是参考《C++并发编程实践》实现的细粒度锁的线程安全队列
+#### ThreadSafeQueue
 
-(2) `ConcurrentQueue`是 github 上高性能的无锁线程安全队列实现，详见
+`ThreadSafeQueue` 类是参考《C++并发编程实践》实现的细粒度锁版的线程安全队列，该队列用在了后续实现的 `CAsyncLog `类中，`ThreadSafeQueue` 类在入队方面提供了值拷贝的 `push` 入队函数和右值引用移动的 `movePush` 入队函数，在出队方面提供了阻塞出队和非阻塞出队两类共四组函数，并依据线程安全数据结构的惯例将 top 与 pop 这一对天然 race condition 的接口合并了，这些函数的原型分别是：
 
-(3) `BlockingQueue`是 muduo 库原本的线程安全阻塞队列，接口按照 《C++并发编程实践》中的示例进行了修改
+```c++
+/// 使用拷贝构造函数 copy 传参进行 push
+void push(T data);
+/// 使用右值引用 move 传参进行 push  
+void movePush(T&& data);
+/// 阻塞的 pop 函数，使用引用返回
+void waitAndPop(T& data);   
+/// 阻塞的 pop 函数，使用 shared_ptr 返回
+std::shared_ptr<T> waitAndPop();
+/// 非阻塞的 pop 函数，使用引用返回
+bool tryPop(T& data);   
+/// 非阻塞的 pop 函数，使用 shared_ptr 返回
+std::shared_ptr<T> tryPop(); 
+```
 
-(4) `BoundedBlockingQueue` 是 muduo 库原本的固定容量线程安全阻塞队列，接口按照 《C++并发编程实践》中的示例进行了修改
+在思考后，最终保留了 `empty`函数，这意味着经典问题 `empty`与 `pop` 的 race condition 没有解决，用户依然有使用错误的可能。一般情况下使用线程安全数据结构是为了不在外部使用其他的锁，所以下面是一种使用队列可能的情况。
 
-#### Logging 中的修改
+```c++
+void ThreadTask()
+{
+    if(!queue.empty())
+    {
+        DataType data;
+        queue.waitAndPop(data);
+
+        /// do some work on data.
+    }
+}
+```
+
+这段代码展示了 `empty` 与 `pop` 接口同时使用的一种经典错误，首先在单线程条件下运行肯定没有问题，但试想一种情况，队列中仅有一个 `data `资源，10 个线程同时运行该任务，最终结果是只有一个线程能够成功获取资源，执行任务并结束线程，其余九个线程（线程调用了 `join` 等待）都会被 `waitAndPop` 函数永远阻塞。不过多数情况下，服务器 `queue` 队列的数据会源源不断的到来，我们只需要使用 `waitAndPop` 一个函数来在业务线程中获取数据即可，如果服务器上需要处理的数据庞大，`queue `队列积累资源速度非常快，可以考虑使用 `busy-loop` + 非阻塞的 `tryPop` 来出队或直接使用无锁实现的 `queue `来分发资源。
+
+#### ConcurrentQueue
+
+`ConcurrentQueue` 类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]()
+
+#### BlockingQueue
+
+`BlockingQueue` 是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改
+
+#### BoundedBlockingQueue
+
+ 是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改
+
+### Logging 中的修改
 
 调整了不同日志级别的 C++ 宏实现以及日志的格式，编译时可以通过定义 `USE_FULL_FILENAME `宏来使用 `__FILE__` 的绝对路径名（默认使用 basename)，日志打印绝对路径名可以方便的使用 vscode 的快速跳转功能。下列是开启 `USE_FULL_FILENAME `宏后便于统计和观察的日志格式，从左到右分别是日志级别、时间戳、线程 id、源文件和行号、日志信息（`LOG_ERROR、LOG_FATAL`、`LOG_SYSERR`、`LOG_SYSFATAL` 这四种日志还有额外的错误信息）
 
@@ -22,7 +62,7 @@
 [INFO ][2022-08-21 01:11:01:171954Z][ 1895][/home/yhy/mrpc/example/net/asio/client.cc:54]127.0.0.1:41246 -> 127.0.0.1:5000 is UP
 ```
 
-同时提供了一组 C 风格日志宏，可以像 `CLOG_INFO("num = %d\n", num)` 这样使用这些宏。
+同时提供了一组 C 风格日志宏，可以像 `CLOG_INFO("num = %d\n", num);` 这样使用这些宏。
 
 ```C++
 #define CLOG_TRACE(fmt, ...) if(mrpc::Logger::GetLogLevel() <= mrpc::Logger::TRACE) \
@@ -41,7 +81,7 @@
 #define CLOG_SYSFATAL(fmt, ...) mrpc::Logger(__FILE__, __LINE__, mrpc::Logger::SYSFA).format(fmt, ##__VA_ARGS__)
 ```
 
-不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf `函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null` 对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 FILE 流，两者的区别其实很简单，即 FILE 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类将日志信息非线程安全的写到当前目录下的 test_log_st 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类将日志信息线程安全（即加锁）的写到当前目录下的 test_log_mt 文件。详细代码见 `src/base/tests/Logging_test.cc`
+不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf` 函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null` 对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 `FILE `流，两者的区别其实很简单，即 `FILE` 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类 `LogFile` 将日志信息非线程安全的写到当前目录下的 `test_log_st` 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类 `LogFile`  将日志信息线程安全（即加锁）的写到当前目录下的 `test_log_mt` 文件。详细代码见 `src/base/tests/Logging_test.cc`
 
 ```C++
 /// C++ 风格日志宏的输出测试代码
@@ -77,9 +117,13 @@
        speed: duration = 0.651811 seconds, 1534187.06 msg/s, 213.45 MiB/s
 ```
 
-由上结果可以看出，
+以上结果可以看出，使用 `va_list` 和 `vsnprintf` 实现的 C 风格日志明显慢了许多，也变相的反映了 muduo 库的日志流类的优化，实际上日志流类的优化主要在下面这几个方面：
 
-#### Mutex 中的修改
+1. 日志流类定制的固定容量 FixedBuffer 类
+2. Efficient Integer to String Conversions by Matthew Wilson.
+3. 除了用户输入日志信息外的所有日志相关的字符串长度在编译期间计算
+
+### Mutex 中的修改
 
 将 muduo 原本的 `Mutex` 修改为 `AssertMutex`，添加了 `Semaphore` 类、`Mutex` 类和 `SpinLock `类，并提供了配套的 RAII 模板类 `LockGuard `和 `UniqueLock`，这些工具类和标准库提供工具类相互兼容，即 `std::lock_guard`、`std::unique_lock`、`LockGuard`、`UniqueLock` 和 `std::mutex`、`Mutex`、`AssertMutex`、`SpinLock` 之间可以混用，例如下列 `FooBar` 测试程序代码片段中直接向 `LockGuard` 和 `UniqueLock` 类模板传递四种类型的锁。详细代码见  `src/base/tests/Mutex_test.cc `和 `src/base/tests/Semaphore_test.cc`
 
@@ -101,7 +145,7 @@ void TestUniqueLock()
 }
 ```
 
-#### Condition 中的修改
+### Condition 中的修改
 
 考虑到目前可用的锁有四种，分别是 `std::mutex`、`Mutex`、`AssertMutex` 和 `SpinLock`，其中可以提供给 `Condition` 类使用的有 `std::mutex`、`Mutex`、`AssertMutex` 三种，故将 `Condition` 修改为模板类以兼容 3 种锁，关于 `Condition` 的测试采用了经典的 `FooBar` 程序，顺便也测试了 `std::condition_variable `对 `Mutex` 和 `AssertMutex` 的兼容性，可以像下列代码片段一样使用 `Condition` 类，详细代码见 `src/base/tests/Condition_test.cc`
 
@@ -129,7 +173,7 @@ void TestFooBarPrint()
 }  
 ```
 
-#### TimeStamp 中的修改
+### TimeStamp 中的修改
 
 对 `TimeStamp` 类的改动比较小，主要是修改了运算符重载方式并在测试中添加了对运算符重载函数的测试，不过 muduo 库中对于 `TimeStamp` 类的测试给了我一些启发，做法是一次性生成 1000w 组时间戳数据，然后计算相邻两个时间戳的差值并记录到对应下标的数组（数组大小为 100），若差值小于零则发生错误，差值大于等于 100 微妙则是 big gap，以此来测试 `TimeStamp` 类的性能和稳定性，一组测试的结果见下，详细代码见 `src/base/tests/TimeStamp_test.cc`
 
@@ -161,7 +205,7 @@ diff = 0.191709
 
 从结果来看，本次测试的 1000w 组数据中约 98% 的相邻时间差小于 1 us，1.8% 的相邻时间差小于 2 us，其他则分别散落在 3 us ~ 16 us 之间，大于 16 us 几乎没有，错误和 big gap 并未发生，这在一定程度上证明了 `TimeStamp` 类的性能。
 
-#### TimeZone 中的修改
+### TimeZone 中的修改
 
 时区类应该是 muduo 库 base 模块下最不容易理解的类，问题的本质是 Linux 系统下 `localtime(2)`, `localtime_r(2)` 等调用都依赖于当前系统的时区设置，muduo 库希望提供给用户独立于系统时区的时区类，用户可以通过 `/usr/share/zoneinfo/`目录下的时区文件创建时区类以使用任何时区，而不受系统的限制。关于时区，一切的复杂性都源于夏令时，这也是 `gettimeofday(2)` 系统调用第二个时区参数被弃用的原因。对于不施行夏令时政策的国家或地区（例如中国）获取地区时间非常简单，只需要 UTC 时间 + 时差即可。对于实行夏令时政策的国家或地区，该政策会由当地的情况动态调整，可能在某个年份停止了夏令时政策，又可能几年后恢复了该政策。这意味着对于过去各地区的夏令时政策需要记录，如果我们使用过去的某个时刻，必须根据过去的夏令时政策进行 UTC 时间至地区时间的转化。而未来各个地区的夏令时政策（由人文，国家国情决定）也无法预测，必须由专门的机构来维护和更新。由上所述，想要实现独立于系统时区的时区类，必须要解析 tzfile 时区文件，不过时区文件并非人类可读的形式，通过 `zdump -v /etc/localtime` 可以查看可读的系统时区的历史信息，形式如下，可以看到时区文件中信息按照年份由低到高排序，且同一年不同季度的夏令时政策不同。
 
@@ -205,7 +249,7 @@ diff = 0.191709
 
 先通过时区文件创建对应地区的时区类，然后将测试数据的 UTC 时间传递给时区类并直接转化得到地区时间和夏令时信息，然后将得到的结果与正确答案进行对拍即可。目前看来 1970 至 2021 年的 5 * 50 共 250 组数据全部通过了测试，详细测试见 `src/base/tests/TimeZone_test.cc`
 
-#### ThreadPool 中的修改
+### ThreadPool 中的修改
 
 线程池类并无可修改的地方，原理也容易理解，即简单的将任务压入线程任务队列，多个线程竞争锁来获取任务，并在各自线程执行，需要注意的是合理的选择线程数目和设置线程任务队列的容量（因为线程任务队列满后会阻塞），一般来说线程数目设置为硬件线程数较好，可用通过 `std::thread::hardware_concurrency()` 来获取，至于线程任务队列容量需要根据实际情况来决定，如果不限制容量，也可能造成任务积累，导致大量占用内存最后进程崩溃。测试代码中测试了多种情况下线程池的工作情况，部分测试代码如下：
 
@@ -256,7 +300,7 @@ void Test3()
 }
 ```
 
-#### Atomic 中的修改
+### Atomic 中的修改
 
 `Atomic` 类是整数类型的原子变量类，目前将其接口修改的贴近 `std::atomic`，要简单的验证其是否正确，可以在 10 个线程中无锁的跑下列任务，然后对比其与 `std::atomic` 变量的结果即可。
 
@@ -279,7 +323,7 @@ void Test3()
     }
 ```
 
-#### CAsyncLog 类
+### CAsyncLog 类
 
 `CAsyncLog` 是一个基于 `ThreadSafeQueue` 实现轻量的备用 C 风格异步日志类，可以满足写测试程序，debug 文件等一些简单的需求，该类是由开源软件 flamingo 的异步日志修改而来。
 
