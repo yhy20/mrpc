@@ -16,13 +16,13 @@
 
 #### Logging 中的修改
 
-调整了不同日志级别的 C++ 宏实现以及日志的格式，目前便于统计和观察的日志格式如下，从左到右分别是日志级别、时间戳、线程 id、源文件和行号、日志信息（`LOG_ERROR、LOG_FATAL`、`LOG_SYSERR`、`LOG_SYSFATAL` 这四种日志还有额外的错误信息）
+调整了不同日志级别的 C++ 宏实现以及日志的格式，编译时可以通过定义 `USE_FULL_FILENAME `宏来使用 `__FILE__` 的绝对路径名（默认使用 basename)，日志打印绝对路径名可以方便的使用 vscode 的快速跳转功能。下列是开启 `USE_FULL_FILENAME `宏后便于统计和观察的日志格式，从左到右分别是日志级别、时间戳、线程 id、源文件和行号、日志信息（`LOG_ERROR、LOG_FATAL`、`LOG_SYSERR`、`LOG_SYSFATAL` 这四种日志还有额外的错误信息）
 
 ```c++
 [INFO ][2022-08-21 01:11:01:171954Z][ 1895][/home/yhy/mrpc/example/net/asio/client.cc:54]127.0.0.1:41246 -> 127.0.0.1:5000 is UP
 ```
 
-编译时可以通过定义 `USE_FULL_FILENAME `宏来使用 `__FILE__` 的绝对路径名（默认使用 basename)，日志打印绝对路径名可以方便的使用 vscode 的快速跳转功能。同时提供了一组 C 风格日志宏，不过使用 C 风格日志宏导致无法使用高性能的日志流类，实测下来性能下降了 15% 左右，修改后的性能测试代码见 `src/base/tests/Logging_test.cc`
+同时提供了一组 C 风格日志宏，可以像 `CLOG_INFO("num = %d\n", num)` 这样使用这些宏。
 
 ```C++
 #define CLOG_TRACE(fmt, ...) if(mrpc::Logger::GetLogLevel() <= mrpc::Logger::TRACE) \
@@ -41,9 +41,47 @@
 #define CLOG_SYSFATAL(fmt, ...) mrpc::Logger(__FILE__, __LINE__, mrpc::Logger::SYSFA).format(fmt, ##__VA_ARGS__)
 ```
 
+不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf `函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null` 对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 FILE 流，两者的区别其实很简单，即 FILE 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类将日志信息非线程安全的写到当前目录下的 test_log_st 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类将日志信息线程安全（即加锁）的写到当前目录下的 test_log_mt 文件。详细代码见 `src/base/tests/Logging_test.cc`
+
+```C++
+/// C++ 风格日志宏的输出测试代码
+/// LOG_INFO << "LOG Hello 0123456789" << " abcdefghijklmnopqrstuvwxyz" << i + 1;
+         nop: g_total = 144888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.269829 seconds, 3706050.87 msg/s, 512.09 MiB/s
+          fd: g_total = 144888896 bytes, fd_total = 144888896 bytes, fp_total = 0 bytes
+       speed: duration = 0.434862 seconds, 2299580.10 msg/s, 317.75 MiB/s
+        FILE: g_total = 144888896 bytes, fd_total = 0 bytes, fp_total = 144888896 bytes
+       speed: duration = 0.298731 seconds, 3347493.23 msg/s, 462.55 MiB/s
+    /tmp/log: g_total = 144888896 bytes, fd_total = 0 bytes, fp_total = 144888896 bytes
+       speed: duration = 0.414903 seconds, 2410201.90 msg/s, 333.03 MiB/s
+ test_log_st: g_total = 144888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.410824 seconds, 2434132.38 msg/s, 336.34 MiB/s
+ test_log_mt: g_total = 144888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.451881 seconds, 2212972.00 msg/s, 305.78 MiB/s
+```
+
+```c++
+/// C 风格日志宏的输出测试代码
+/// CLOG_INFO("CLOG Hello 0123456789 abcdefghijklmnopqrstuvwxyz %d", i + 1); 
+         nop: g_total = 145888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.365384 seconds, 2736846.71 msg/s, 380.78 MiB/s
+          fd: g_total = 145888896 bytes, fd_total = 145888896 bytes, fp_total = 0 bytes
+       speed: duration = 0.526957 seconds, 1897688.05 msg/s, 264.03 MiB/s
+   /dev/null: g_total = 145888896 bytes, fd_total = 0 bytes, fp_total = 145888896 bytes
+       speed: duration = 0.399485 seconds, 2503222.90 msg/s, 348.27 MiB/s
+    /tmp/log: g_total = 145888896 bytes, fd_total = 0 bytes, fp_total = 145888896 bytes
+       speed: duration = 0.463908 seconds, 2155599.82 msg/s, 299.91 MiB/s
+ test_log_st: g_total = 145888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.502663 seconds, 1989404.43 msg/s, 276.79 MiB/s
+ test_log_mt: g_total = 145888896 bytes, fd_total = 0 bytes, fp_total = 0 bytes
+       speed: duration = 0.651811 seconds, 1534187.06 msg/s, 213.45 MiB/s
+```
+
+由上结果可以看出，
+
 #### Mutex 中的修改
 
-将 muduo 原本的 `Mutex` 修改为 `AssertMutex`，添加了 `Semaphore` 类、`Mutex` 类和 `SpinLock `类，并提供了配套的 RAII 模板类 `LockGuard `和 `UniqueLock`，这些工具类和标准库提供工具类相互兼容，即 `std::lock_guard`、`std::unique_lock`、`LockGuard`、`UniqueLock` 和 `std::mutex`、`Mutex`、`AssertMutex`、`SpinLock` 之间可以混用，例如下 `FooBar `测试程序代码片段中直接向 `LockGuard` 和 `UniqueLock` 类模板传递四种类型的锁。详细代码见  `src/base/tests/Mutex_test.cc `和 `src/base/tests/Semaphore_test.cc`
+将 muduo 原本的 `Mutex` 修改为 `AssertMutex`，添加了 `Semaphore` 类、`Mutex` 类和 `SpinLock `类，并提供了配套的 RAII 模板类 `LockGuard `和 `UniqueLock`，这些工具类和标准库提供工具类相互兼容，即 `std::lock_guard`、`std::unique_lock`、`LockGuard`、`UniqueLock` 和 `std::mutex`、`Mutex`、`AssertMutex`、`SpinLock` 之间可以混用，例如下列 `FooBar` 测试程序代码片段中直接向 `LockGuard` 和 `UniqueLock` 类模板传递四种类型的锁。详细代码见  `src/base/tests/Mutex_test.cc `和 `src/base/tests/Semaphore_test.cc`
 
 ```c++
 void TestLockGuard()
@@ -121,7 +159,7 @@ diff = 0.191709
 ...(后续都是 0)
 ```
 
-从结果来看，本次测试的 1000w 组数据中约 98% 的相邻时间差小于 1 us，1.8% 的相邻时间差小于 2 us，其他散落分别在 3 us ~ 16 us 之间，大于 16 us 几乎没有，big gap 则是一个也没有，这在一定程度上证明了 `TimeStamp` 类的性能。
+从结果来看，本次测试的 1000w 组数据中约 98% 的相邻时间差小于 1 us，1.8% 的相邻时间差小于 2 us，其他则分别散落在 3 us ~ 16 us 之间，大于 16 us 几乎没有，错误和 big gap 并未发生，这在一定程度上证明了 `TimeStamp` 类的性能。
 
 #### TimeZone 中的修改
 
@@ -151,7 +189,7 @@ diff = 0.191709
 /usr/share/zoneinfo/Australia/Sydney
 ```
 
-下列是` /usr/share/zoneinfo/America/New_York `时区文件的部分测试数据，从左到右分别是随机生成的 UTC 时间，修改系统时区后通过函数 `localtime_r(3)` 和 `strftime(3) `生成的正确的地区时间，以及当时是否实施夏令时政策。
+下列是 `/usr/share/zoneinfo/America/New_York`时区文件的部分测试数据，从左到右分别是随机生成的 UTC 时间，修改系统时区后通过函数 `localtime_r(3)` 和 `strftime(3) `生成的正确的地区时间，以及当时是否实施夏令时政策。
 
 ```c++
 { "1970-01-12 13:46:40", "1970-01-12 08:46:40-0500(EST)", false },
