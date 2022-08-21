@@ -66,8 +66,8 @@ void Channel::remove()
  * Channel::tie() 详解，此处是一个智能指针使用的特定场景之一。
  * 当对端 TCP 连接断开时会触发 Channel::handleEvent() 调用，而
  * handleEvent 中会调用用户提供的 CloseCallback，而用户的代码在
- * CloseCallback 中可能会析构 Channel 对象，此时会造成 Channel::
- * handleEvent() 执行到一半的时候，其所属的Channel对象本身被销毁
+ * CloseCallback 中可能会析构 TcpConnection 对象并导致 Channel 
+ * 对象被析构，此时会造成 Channel::handleEvent() 执行到一半的时候，其所属的 Channel 对象本身被销毁
  * 了，这时程序会 core dump. 而 tie 就是用于延长某些对象的生命周
  * 期，可以是 Channel 对象，也可以是其 owner 对象。
  * 

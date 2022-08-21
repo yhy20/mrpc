@@ -335,12 +335,84 @@ void Test3()
 
 #### (1) 多线程下 C++ 对象生命周期管理问题
 
+C++ 中一个无法回避的问题是对象生命周期管理的问题，这个问题变相的也是内存管理问题，一般情况下通过 RAII 编程技法和智能指针能够解决大部分问题，不过在多线程情况下对象的析构更为复杂了，一方面如果一个线程可以被多个线程使用，则在一个线程调用过程中对象被另一个线程析构了将很可能导致程序崩溃，另一方面有时候需要延长对象的生命周期。muduo 库提供了一种解决思路，即 tie 函数，tie 实际上是一个冗余的 shared_ptr 指针，用于保护或延长特定对象的生命周期。在 muduo 中，当对端 TCP 连接断开时会触发 Channel::handleEvent() 调用，而 handleEvent 中会调用用户提供的 CloseCallback，而用户的代码在 CloseCallback 中可能会析构 TcpConnection 对象并导致 Channel 对象被析构，此时会造成 Channel::handleEvent() 执行到一半的时候，其所属的 Channel 对象本身被销毁了，这时程序会 core dump，而 tie 就可以起到保护作用。
 
 #### (2) Epoll 全事件触发情况分析和测试
 
+下列事件是既可用于 `epoll_ctl(2)` 注册也会被 `epoll_wait(2)` 作为 revents 返回的事件
 
+1. `EPOLLIN`: The associated file is available for read(2) operations.
+   一般作为读事件处理，通常意味着 fd 的内核读缓冲区中有数据，此时调用 `read(2)` 不会陷入阻塞状态
+2. `EPOLLPRI`: There is urgent data available for read(2) operations.
+   一般作为读事件处理，表示紧急数据到达，例如 tcp socket 的带外数据
+3. `EPOLLOUT`: The associated file is available for write(2) operations.
+   一般作为写事件处理，通常意味着 fd 的内核写缓冲区未满，此时调用 `write(2)` 不会陷入阻塞状态
+4. `EPOLLRDHUP`: (since Linux 2.6.17) Stream socket peer closed connection, shut down writing half of connection or stream socket local shut down reading half of connectoin. This flag is especially useful for writing simple code to detect peer shutdownwhen using Edge Triggered monitoring.
+   该事件只有在注册后才会触发，一般在水平触发模式下要监听对方是否关闭套接字，只需要监听 EPOLLIN 事件并调用 read 返回 0 即可。但在边缘触发模式下，如果不及时处理对方关闭套接字事件可能会导致永远丢失处理该事件。而在边缘触发模式下使用 `EPOLLRDHUP` 可以保证 `epoll_wait(2)` 会向水平触发一样，总是返回 `EPOLLRDHUP` 事件就绪，可以方便的进行延迟处理，而不会导致事件处理的丢失。
+5. `EPOLLONESHOT`: (since Linux 2.6.2) sets the one-shot behavior for the associated file descriptor. This means that after an event is pulled out with epoll_wait(2) the associated file descriptor is internally disabled and no other events will be reported by the epoll interface.
+   `EPOLLONESHOT` 表示一次性事件，在触发一次后就会失效，需要修改重新注册才能再次生效，通常用于和 `EPOLLOUT` 事件一同使用。在水平触发模式下，fd 内核缓冲区不满，`epoll_wait(2)` 会始终返回 `EPOLLOUT` 事件就绪，大量的积累会导致 busy-loop，白白浪费 CPU 时间片资源
+6. EPOLLET: Sets the Edge Triggered behavior for the associated file descriptor.The default behavior for epoll is Level Triggered. See epoll(7) for more detailed information about Edge and Level Triggered event distribution architectures.
+   将文件描述符设置为边缘触发，epoll 对 fd 的默认行为是条件触发。
 
-Acceptor 中关于 fd 耗尽问题的讨论
+下列事件是仅会被 `epoll_wait(2)` 作为 revents 返回的事件，它们会始终被 epoll 监听，不需要用户手动注册
+
+1. `EPOLLERR`: Error condition happened on the associated file descriptor. epoll_wait(2) will always wait for this event; it is not necessary to set it in events.
+   仅用于内核设置返回事件 revents，表示发生错误。只有采取动作时，才能知道是否对方异常。即客户端突然断掉是不会也不可能会主动触发 `EPOLLERR` 事件的。只有服务器采取动作（当然服务器此刻也不知道发生异常）read or write 发生错误时，会触发 `EPOLLERR` 事件，说明对方已经异常断开。触发 `EPOLLERR` 事件，一般的处理方法是将 socketfd 从 epollfd 中 DEL 再 `close` 即可。
+   PS: 当客户端的机器异常崩溃了或者网络断掉了，则服务器一端是无从知晓的。发生这种情况与是否使用 epoll 无关，必须要服务器主动的去检查才能发现并解决问题。而服务器显然不可能经常的向客户写数据，通过有没有发生 `EPOLLERR` 事件来确认客户端是否有问题，因此服务器端的超时检查很重要。即使没有上述情况发生也应当做超时检查并主动断开连接，比如利用客户端恶意连接（只连接不发送数据）来攻击服务器，恶意占用服务器资源致使服务器崩溃。
+2. EPOLLHUP: Hang up happened on the associated file descriptor. epoll_wait(2) will always wait for this event; it is not necessary to set it in events.
+   man 手册对于 `EPOLLHUP` 事件的描述非常少，许多人误以为对端关闭 TCP 连接就叫 hang hup. 一部分是原因 pipe 的误导，如果将 pipe 的一端注册到 epollfd，关闭另一端会触发 `EPOLLHUP` 事件，不过对于 socketfd 则不一样，只有 `SHUT_WR` 和 `SHUT_RD` 同时关闭才会触发 `EPOLLHUP`。举个常见的例子，客户端调用 `shutdown` 或 `close` 关闭 TCP 的写连接，此时内核会发送 FIN 包至服务器，服务器的内核会回复一个 ACK 包，而服务器收到 FIN 报文也就意味着被动关闭了读连接（SHUT_RD)，此时服务器处于 CLOSE_WAIT 状态。当服务器需要发送的数据全部写到 socketfd 上后会主动调用 `shutdown` 或 `close` 关闭写连接（SHUT_WR)，此时满足了 hang up 的条件（需要注意此时数据在内核缓冲区上由内核代为发送，发送完毕后会发送 FIN 报文完成挥手），不过满足 hang up 条件并不表示会触发 EPOLLHUP 事件，因为 close 引用计数为 1 的 socketfd 会直接将该 fd 从 epollfd 上清除，也就自然不会触发 `EPOLLHUP` 事件了，所以要触发 `EPOLLHUP`，服务器必须使用 `shutdown` 调用关闭连接。
+
+Epoll 所有事件触发情况分析:
+
+1. `EPOLLIN`: 在 epollfd 上注册该事件，对端数据正常到达或对端正常关闭
+   `EPOLLIN` 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下的 EPOLLIN test1 和 test2
+2. `EPOLLOUT`: 在 epollfd 上注册该事件，内核写缓冲区（缓冲区大小取决于 TCP 窗口和拥塞控制）空闲或 fd 非阻塞
+   `EPOLLOUT` 事件触发的详细测试代码见 ` src/learn/iomultiplexing` 目录下的 EPOLLOUT_test1.cc
+3. `EPOLLRDHUP`: 在 epollfd 上注册该事件，对端正常关闭，本端调用 `shutdown(fd, SHUT_RD);`
+   `EPOLLRDHUP` 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下 EPOLLRDHUP test1、test2 和 test3
+4. `EPOLLHUP`: 监听的 socketfd 尚未建立连接、对端调用 `shutdown(fd, SHUT_WR)` 或 `close(fd)` 且本端调用 `shutdown(fd, SHUT_RD)`，本端调用 `shutdown(fd, SHUT_RDWR)` 或 `shutdown(fd, SHUT_RD)` + `shutdown(fd, SHUT_WR)`
+   EPOLLHUP 事件触发的详细测试代码见 `src/learn/iomultiplexing` 目录下 EPOLLHUP test1、test2、test3 和 test4
+
+### Acceptor 中关于 fd 耗尽的问题
+
+Read the section named "The special problem of accept()ing when you can't" in libev's doc by Marc Lehmann, author of libev. 原文的意思大致如下:
+
+在大型服务器中，经过会出现描述符用完（通常是 linux 的资源限制导致的）的情况，这会导致 accept() 失败，并返还一个 ENFILE 错误，但是内核并没有拒绝这个连接，连接仍然在连接队列中，这导致在下一次迭代的时候，仍然会触发监听描述符的可读事件，最终造成程序 busy loop。一种简单的处理方式就是当程序遇到这种问题就直接忽略掉，直到这种情况消失，显然这种方法将会导致 busy waiting，一种比较好的处理方式就是记录除了 EAGAIN 或 EWOULDBLOCK 其他任何错误，告诉用户出现了某种错误，并停止监听描述符的可读事件，减少 CPU 的使用。如果程序是单线程的，我们可以先 open /dev/null，保留一个描述符，当 accept() 出现 ENFILE 或 EMFILE 错误的时候，close 掉 /dev/null 这个 fd，然后 accept，再 close 掉 accept 产生的 fd，然后再次 open /dev/null，这是一种比较优雅的方式来拒绝掉客户端的连接。最后一种方式则是遇到 accept() 的这种错误，直接拒绝并退出，但是显然这种方式很容易受到 Dos 攻击。而 Acceptor 对象仅在 Acceptor 线程中受理客户端连接，符合上述单线程优雅处理方式。
+
+### EventLoop 中关于 SIGPIPE 信号的处理
+
+一、SIGPIPE 信号产生原因以及为什么需要处理该信号。
+(1) 产生原因：当程序向一个接收了 RST 的套接字执行写操作时，会触发 SIGPIPE 信号
+(2) 处理原因：SIGPIPE 信号的默认行为是终止进程，会导致整个服务器意外退出。
+
+二、导致 TCP 发送 RST 报文的原因。
+(1) 发送 SYN 报文时指定的目的端口没有接收进程监听。
+     这种情况下常见的例子是客户端访问服务器未监听的端口，服务器回复 RST 报文。比如，访问 Web 服务器的 21 端口（FTP），如果该端口服务器未开放或者阻断了到该端口的请求报文，则服务器很可能会给客户端 SYN 报文回应一个 RST 报文。因此，服务器对终端的 SYN 报文响应 RST 报文在很多时候可以作为判断目标端口是否开放的一个可靠依据。当然，在大多数场景下，服务器对到达自身未监听端口的报文进行丢弃而不响应是一种更为安全的实现。
+(2) 客户端尝试连接服务端的一个端口，其处于 TIME_WAIT 状态时，服务端会向客户端发 RST。
+(3) TCP 的一端主动发送 RST, 丢弃发送缓冲区数据，异常终止连接。
+     正常情况下结束一个已有 TCP 连接的方式是发送 FIN，FIN 报文会在所有排队数据都发出后才会发送，正常情况下不会有数据丢失，因此这也被称为是有序释放。另外一种拆除已有 TCP 连接的方式就是发送 RST，这种方式的优点在于无需等待数据传输完毕，可以立即终结连接，这种通过 RST 结束连接的方式被称为异常释放。
+(4) 向特殊的半连接状态套接字发送数据会收到回复的 RST 报文（此处指的不是 shutdown 调用的半关闭状态）
+     正常情况下 TCP 通过四元组标识一个已经创建的连接，当服务器或客户端收到一个新四元组（服务器或客户端本地没有这个连接）的非 SYN 首包就会丢弃该报文并回复一个 RST 报文。举个例子：位于不同机器上的用户端和服务器在正常连接的情况下，突然拔掉网线，再重启服务端。在这个过程中客户端感受不到服务端的异常，还保持着连接（此时就是半连接状态）客户端向该连接写数据，会收到服务端回复的 RST 报文，如果客户端再收到 RST 报文后继续向该连接写数据，会触发 SIGPIPE 信号，默认情况下会导致客户端异常退出。
+
+三、在网络库中可能触发 SIGPIPE 信号的情况。
+    假设服务器繁忙，没有及时处理对方断开连接的事件，就有可能出现在连接断开后继续发送数据的情况，下面的例子模拟了这种情况。
+
+```c++
+void onConnection(const TcpConnectionPtr& conn)
+{
+     if(conn->connected())
+     {
+         ::sleep(5);
+         conn->send(message1); // 会收到 RST 报文
+         conn->send(message2); // 触发 SIGPIPE 信号
+     }  
+}
+```
+
+**四、SIGPIPE 信号触发测试代码** 
+
+详细的测试代码见 `src/learn/iomultiplexing/epoll_thread` 目录下的 SIGPIPE test1, test2，在测试代码中还讨论了 `shutdown(sock, SHUT_RD);` 的行为，及其平台相关性。 `shutdown(sock, SHUT_RD);` 的平台相关性会影响到 RST 报文的发送。
+
 
 ## **learn 目录**
 
