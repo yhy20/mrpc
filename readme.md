@@ -8,7 +8,7 @@
 
 #### ThreadSafeQueue
 
-`ThreadSafeQueue` 类是参考《C++并发编程实践》实现的细粒度锁版的线程安全队列，该队列用在了后续实现的 `CAsyncLog `类中，`ThreadSafeQueue` 类在入队方面提供了值拷贝的 `push` 入队函数和右值引用移动的 `movePush` 入队函数，在出队方面提供了阻塞出队和非阻塞出队两类共四组函数，并依据线程安全数据结构的惯例将 `top`与 `pop`这一对天然 race condition 的接口合并了，这些函数的原型分别是：
+`ThreadSafeQueue` 类是参考《C++并发编程实践》实现的细粒度锁版的线程安全队列，该队列用在了后续实现的 `CAsyncLog `类中，`ThreadSafeQueue` 类在入队方面提供了值拷贝的 `push` 入队函数和右值引用移动的 `movePush` 入队函数，在出队方面提供了阻塞出队和非阻塞出队两类共四组函数，并依据线程安全数据结构的惯例将 `top`与 `pop `这一对天然 race condition 的接口合并了，这些函数的原型分别是：
 
 ```c++
 /// 使用拷贝构造函数 copy 传参进行 push
@@ -25,7 +25,7 @@ bool tryPop(T& data);
 std::shared_ptr<T> tryPop(); 
 ```
 
-在思考后，最终保留了 `empty`函数，这意味着经典问题 `empty `与 `pop` 的 race condition 没有解决，用户依然有使用错误的可能。一般情况下使用线程安全数据结构是为了不在外部使用其他的锁，所以下面是一种使用队列可能的情况。
+在思考后，最终保留了 `empty` 函数，这意味着经典问题 `empty `与 `pop` 的 race condition 没有解决，用户依然有使用错误的可能。一般情况下使用线程安全数据结构是为了不在外部使用其他的锁，所以下面是一种使用队列可能的情况。
 
 ```c++
 void ThreadTask()
@@ -40,19 +40,19 @@ void ThreadTask()
 }
 ```
 
-这段代码展示了 `empty` 与 `pop` 接口同时使用的一种经典错误，首先在单线程条件下运行肯定没有问题，但试想一种情况，队列中仅有一个 `data `资源，10 个线程同时运行该任务，最终结果是只有一个线程能够成功获取资源，执行任务并结束线程，其余九个线程（线程调用了 `join` 等待）都会被 `waitAndPop` 函数永远阻塞。不过多数情况下，服务器 `queue` 队列的数据会源源不断的到来，我们只需要使用 `waitAndPop` 一个函数来在业务线程中获取数据即可，如果服务器上需要处理的数据庞大，`queue `队列积累资源速度非常快，可以考虑使用 `busy-loop` + 非阻塞的 `tryPop` 来出队或直接使用无锁实现的 `queue `来分发资源。
+这段代码展示了 `empty` 与 `pop` 接口同时使用的一种经典错误，首先在单线程条件下运行肯定没有问题，但试想一种情况，队列中仅有一个 `data `资源，10 个线程同时运行该任务，最终结果是只有一个线程能够成功获取资源，执行任务并结束线程，其余九个线程（线程调用了 `join` 等待）都会被 `waitAndPop` 函数永远阻塞。不过多数情况下，服务器 `queue` 队列的数据会源源不断的到来，我们只需要使用 `waitAndPop` 一个函数来在业务线程中获取数据即可，如果服务器上需要处理的数据庞大，`queue `队列积累资源速度非常快，可以考虑使用 `busy-loop` + 非阻塞的 `tryPop` 来出队或直接使用无锁实现的 `queue` 来分发资源。
 
 #### ConcurrentQueue
 
-`ConcurrentQueue`类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]([https://github.com/cameron314/concurrentqueue]())
+`ConcurrentQueue `类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]([https://github.com/cameron314/concurrentqueue]())
 
 #### BlockingQueue
 
-`BlockingQueue`是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改。
+`BlockingQueue` 是 muduo 库原本的线程安全阻塞队列，该类使用条件变量和粗粒度的锁实现，接口按照 《C++并发编程实践》中的示例进行了修改。
 
 #### BoundedBlockingQueue
 
-`BoundedBlockingQueue`类是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改。
+`BoundedBlockingQueue `类是 muduo 库原本的固定容量线程安全阻塞队列，该类在 `boost::circular_buffer` 的基础上使用条件变量和粗粒度的锁实现在，接口按照 《C++并发编程实践》中的示例进行了修改。
 
 ### Logging 中的修改
 
@@ -81,7 +81,7 @@ void ThreadTask()
 #define CLOG_SYSFATAL(fmt, ...) mrpc::Logger(__FILE__, __LINE__, mrpc::Logger::SYSFA).format(fmt, ##__VA_ARGS__)
 ```
 
-不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf` 函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null `对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 `FILE` 流，两者的区别其实很简单，即 `FILE` 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 FILE 流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类 `LogFile` 将日志信息非线程安全的写到当前目录下的 `test_log_st` 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类 `LogFile`  将日志信息线程安全（即加锁）的写到当前目录下的 `test_log_mt` 文件。详细代码见 `src/base/tests/Logging_test.cc`
+不过 C 风格日志宏的实现使用的是 `va_list` 和 `vsnprintf` 函数，这导致无法使用 muduo 库实现的高性能日志流类，所以性能有所下降，下列是 `O2` 优化下的一组性能测试（每组测试中写 100 w 条日志），其中 nop 表示直接丢弃日志，fd 表示写到 `/dev/null `对应的 fd 文件描述符， FILE 表示写到 `/dev/null` 对应的 `FILE` 流，两者的区别其实很简单，即 `FILE` 流多了一层应用层缓冲，从性能上也可以看出 FILE 的 462.55 MiB/s 明显比 fd 的 317.75 MiB/s 快的多。/tmp/log 表示使用 `FILE `流写到 /tmp 目录下的 log 日志文件，这是真实情况下的写日志性能，test_log_st 表示使用 muduo 提供的同步日志后端类 `LogFile` 将日志信息非线程安全的写到当前目录下的 `test_log_st` 文件，而 test_log_mt 表示使用 muduo 提供的同步日志后端类 `LogFile`  将日志信息线程安全（即加锁）的写到当前目录下的 `test_log_mt` 文件。详细代码见 `src/base/tests/Logging_test.cc`
 
 ```C++
 /// C++ 风格日志宏的输出测试代码
@@ -175,7 +175,7 @@ void TestFooBarPrint()
 
 ### TimeStamp 中的修改
 
-对 `TimeStamp` 类的改动比较小，主要是修改了运算符重载方式并在测试中添加了对运算符重载函数的测试，不过 muduo 库中对于 `TimeStamp` 类的测试给了我一些启发，做法是一次性生成 1000w 组时间戳数据，然后计算相邻两个时间戳的差值并记录到对应下标的数组（数组大小为 100），若差值小于零则发生错误，差值大于等于 100 微妙则是 big gap，以此来测试 `TimeStamp` 类的性能和稳定性，一组测试的结果见下，详细代码见 `src/base/tests/TimeStamp_test.cc`
+对 `TimeStamp` 类的改动比较小，主要是修改了运算符重载方式并在测试中添加了对运算符重载函数的测试，不过 muduo 库中对于 `TimeStamp` 类的测试给了我一些启发，做法是一次性生成 100w 组时间戳数据，然后计算相邻两个时间戳的差值并记录到对应下标的数组（数组大小为 100），若差值小于零则发生错误，差值大于等于 100 微妙则是 big gap，以此来测试 `TimeStamp` 类的性能和稳定性，一组测试的结果见下，详细代码见 `src/base/tests/TimeStamp_test.cc`
 
 ```c++
 
@@ -203,7 +203,7 @@ diff = 0.191709
 ...(后续都是 0)
 ```
 
-从结果来看，本次测试的 1000w 组数据中约 98% 的相邻时间差小于 1 us，1.8% 的相邻时间差小于 2 us，其他则分别散落在 3 us ~ 16 us 之间，大于 16 us 几乎没有，错误和 big gap 并未发生，这在一定程度上证明了 `TimeStamp` 类的性能。
+从结果来看，本次测试的 100w 组数据中约 98% 的相邻时间差小于 1 us，1.8% 的相邻时间差小于 2 us，其他则分别散落在 3 us ~ 16 us 之间，大于 16 us 几乎没有，错误和 big gap 并未发生，这在一定程度上证明了 `TimeStamp` 类的性能。
 
 ### TimeZone 中的修改
 
@@ -233,7 +233,7 @@ diff = 0.191709
 /usr/share/zoneinfo/Australia/Sydney
 ```
 
-下列是 `/usr/share/zoneinfo/America/New_York`时区文件的部分测试数据，从左到右分别是随机生成的 UTC 时间，修改系统时区后通过函数 `localtime_r(3)` 和 `strftime(3) `生成的正确的地区时间，以及当时是否实施夏令时政策。
+下列是 `/usr/share/zoneinfo/America/New_York` 时区文件的部分测试数据，从左到右分别是随机生成的 UTC 时间，修改系统时区后通过函数 `localtime_r(3)` 和 `strftime(3) `生成的正确的地区时间，以及当时是否实施夏令时政策。
 
 ```c++
 { "1970-01-12 13:46:40", "1970-01-12 08:46:40-0500(EST)", false },
@@ -551,7 +551,10 @@ cat /proc/sys/net/ipv4/ip_local_port_range
 
 总结：不要为服务器使用临时端口！否则，将面临一些非常有趣的行为发生，这些行为通常是不确定且难以调试的。
 
-
 ## **learn 目录**
 
 ## todo
+
+1. 非对称协程模块
+2. 基于 yaml-cpp 的 yaml 配置文件解析模块
+3. 高效内存池实现
