@@ -50,16 +50,15 @@ private:
     bool insert(Timer* timer);
 
 private:
-    EventLoop*  m_loop;
-    const int   m_timerFd;
-    Channel     m_timerFdChannel;
+    EventLoop*  m_loop;             // 定时器队列所属的 EventLoop
+    const int   m_timerFd;          // 定时器使用的唤醒 fd
+    Channel     m_timerFdChannel;   // 定时器 Channel
 
-    // Timer list sorted by expiration
-    TimerList   m_timers;
+    TimerList   m_timers;           // 定时器队列
 
-    ActiveTimerSet m_activeTimers;
-    bool m_callingExpiredTimers;
-    ActiveTimerSet m_cancelingTimers;
+    ActiveTimerSet  m_activeTimers;             // 活跃的定时器
+    bool            m_callingExpiredTimers;     // 是否在调用活跃任务
+    ActiveTimerSet  m_cancelingTimers;          // 取消定时器
 };
 
 }  // namespace net

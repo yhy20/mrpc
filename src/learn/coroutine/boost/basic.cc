@@ -26,9 +26,6 @@ void Test1()
     std::cout << "Test1 finish!" << std::endl; 
 }
 
-
-
-
 int main()
 {
     Test1();
