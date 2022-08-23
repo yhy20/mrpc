@@ -485,7 +485,7 @@ void onConnection(const TcpConnectionPtr& conn)
 
 下面是我绘制的非阻塞 connect 的状态迁移图
 
-![1661222890317](image/readme/1661222890317.png)
+![1661222890317](image/readme/connector.png)
 
 #### (2) Self-connection 问题
 
