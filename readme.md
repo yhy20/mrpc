@@ -451,10 +451,76 @@ void onConnection(const TcpConnectionPtr& conn)
 #### (1) 非阻塞 connect 状态机
 
 
-![1661215959148](image/readme/1661215959148.png)
+下面是非阻塞 connect 的状态迁移图
+
+![1661216268482](image/readme/1661216268482.png)
 
 
 #### (2) Self-connection 问题
+
+When a client try to connect to a server, if client and server are both localhost, self-connection may happen(source port and destination port happened to be the same.) But my problem is how can self-connection be possible?
+
+原问题见 [https://stackoverflow.com/questions/16767113/linux-unix-socket-self-connection]()
+
+讨论中问题描述比较清楚的博文见 [http://sgros.blogspot.com/2013/08/tcp-client-self-connect.html]()
+
+如果在 shell 中运行下列代码。
+
+```c++
+while true
+do
+     telnet 127.0.0.1 50000
+done
+```
+
+则会持续不断的收到 'Connection refused' message，但是在某一时刻，连接将会被建立并且不论输入什么字符串都将被回显（类似于 EchoServer)，下面是部分输出结果。
+
+```c++
+Trying 127.0.0.1...
+telnet: connect to address 127.0.0.1: Connection refused
+Trying 127.0.0.1...
+telnet: connect to address 127.0.0.1: Connection refused
+Trying 127.0.0.1...
+telnet: connect to address 127.0.0.1: Connection refused
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+test Socket Self-connection
+test Socket Self-connection
+```
+
+需要注意，我们并没有启动任何进程在 localhost 上的端口 50000 上监听，但使用 netstat 命令输出可以看到连接确实建立了。
+
+```c++
+netstat -tn | grep -E '50000|Proto'
+Proto Recv-Q Send-Q Local Address    Foreign Address  State  
+tcp        0      0 127.0.0.1:50000  127.0.0.1:50000  ESTABLISHED
+```
+
+并且使用 tcpdump 监控流量可以观察到发生了三次握手，所以到底发生了什么，简而言之，client connected to itself，下面是更多的解释。
+
+首先，我们从一个事实开始，当客户端（在本例中是 telent 应用程序）创建套接字并尝试连接到服务器时，内核会为其分配一个随机源端口号，这是因为每个 TCP 连接都用 4 元组唯一标识。
+
+```c++
+(source IP, source port, destination IP, destination port)
+```
+
+其中，三个参数是预先确定的，即 source IP, destination IP and destinationport，剩下的是必须以某种方式分配的源端口，通常情况下，应用程序将该任务留给内核，内核从临时端口范围内选取它（应用程序也可以使用 bind(2) 系统调用选择源端口，但很少这样做），那么这些临时端口在什么范围内呢？它们通常是high ports（数值较大的端口），我们可以通过查看 /proc file system 来查看范围，例如：
+
+```c++
+cat /proc/sys/net/ipv4/ip_local_port_range 
+32768   60999
+```
+
+在我的服务器上，临时端口号位于 32768 和 61000 之间，现在回到 telnet 应用程序示例，当 telnet 启动时，内核从给定的临时端口范围中选择一些空闲端口并尝试连接到 localhost:5000，由于通常没有进程侦听临时端口因此会收到内核回复的 RST 响应并在 telnet 客户端给出错误消息 Connection denied。有趣的是，Linux 是按顺序而不是随机选择临时端口的，这可能导致很容易猜到分配的端口号，这也许是一个安全问题，留待进一步的调查确认，但无论如何，在多次的迭代中有一次，telnet 客户端被分配源端口 50000，SYN 请求被发送到端口 50000，即发送给了它自己，所以它与自己建立了联系！这实际上完全符合 TCP 规范（TCP 规范支持所谓的同时打开功能）
+
+关于 Self Connect 的发生条件
+
+1. 客户端和服务器必须在相同的 IP 地址上运行
+2. 使用临时端口来监听服务器
+3. 只能在握手阶段发生，如果发现某些客户端使用某个临时端口并尝试连接到它，将被拒绝
+
+总结：不要为服务器使用临时端口！否则，将遇到临一些非常有趣的行为发生，这些行为通常是不确定的且难以调试的。
 
 
 ## **learn 目录**
