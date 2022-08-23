@@ -44,7 +44,7 @@ void ThreadTask()
 
 #### ConcurrentQueue
 
-`ConcurrentQueue`类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]()
+`ConcurrentQueue`类是 github 上高性能的无锁线程安全队列实现，详见[https://github.com/cameron314/concurrentqueue]([https://github.com/cameron314/concurrentqueue]())
 
 #### BlockingQueue
 
@@ -325,7 +325,7 @@ void Test3()
 
 ### CAsyncLog 类
 
-`CAsyncLog` 是一个基于 `ThreadSafeQueue` 实现轻量的备用 C 风格异步日志类，可以满足写测试程序，debug 文件等一些简单的需求，该类是由开源软件 flamingo 的异步日志修改而来，也是我实现的第一个异步日志类，关于 flamingo，见 [https://github.com/balloonwj/flamingo]()
+`CAsyncLog` 是一个基于 `ThreadSafeQueue` 实现轻量的备用 C 风格异步日志类，可以满足写测试程序，debug 文件等一些简单的需求，该类是由开源软件 flamingo 的异步日志修改而来，也是我实现的第一个异步日志类，关于 flamingo，见 [https://github.com/balloonwj/flamingo]([https://github.com/balloonwj/flamingo]())
 
 #### AsyncLogging
 
@@ -450,8 +450,40 @@ void onConnection(const TcpConnectionPtr& conn)
 
 #### (1) 非阻塞 connect 状态机
 
+首先，一个基本的事实是 connect 是一个阻塞函数。正常情况下， 在现代的网络信道上，connect 调用会在毫秒级时间返回，但如果在连接过程中发生一些错误（例如网络中断，发送的 SYN 报文被对方丢弃且不回复 RST 报文）则 connect 的最大阻塞时间可达 127 秒。当有这样一种需求，即想要同时发起几十个客服端的连接并统一监听时，阻塞的 connect 则会带来麻烦。关于该问题，connect man 手册的 `EINPROGRESS `错误提供了下面一段描述。
 
-下面是非阻塞 connect 的状态迁移图
+**The socket is nonblocking and the connection cannot be completed immediately. It is possible to select(2) or poll(2) or epoll(2) for completion by listening the socket for writing. After select(2), poll(2) or epoll(2) indicates writability, use getsockopt(2) to read the SO_ERROR option at level SOL_SOCKET to determine whether connect() completed successfully (SO_ERROR is zero) or unsuccessfully (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure)**
+
+这段文字为解决前述问题提供了一种思路，即非阻塞 connect + I/O 多路复用（该技巧在《Linux 高性能服务器编程》的的 9.5 节也有描述)。如果我们在非阻塞的 socketFd 上调用 connect 时，connect 有可能返回 -1，表示失败，但如果 errno 是 EINPROGRESS，则说明这个 connect 是非阻塞的，无法立即完成，需要用 polling API（select, poll, epoll) 去监听可写事件，当监听的 fd 上有事件发生时，再使用 getsockopt(2) 查看 connect 的结果，以此判断连接是否真正建立。
+
+根据《unix 网络编程》A socket is ready for writing if any of the following four conditions is true.
+
+1. The number of bytes of available space in the socket send buffer is greater than or equal to the current size of the low-water mark for the socket send buffer and either: (i) the socket is connected, or (ii) the socket does not require a connection (e.g., UDP). This means that if we set the socket to nonblocking, a write operation will not block and will return a positive value (e.g., the number of bytes accepted by the transport layer).
+2. The write half of the connection is closed. A write operation on the socket will generate SIGPIPE.
+3. A socket using a non-blocking connect has completed the connection, or the connect has failed.
+4. A socket error is pending. A write operation on the socket will not block and will return an error (–1) with errno set to the specific error condition.
+
+由上述的 3 和 4 条可以知道，无论 connect 连接是否建立成功又或者发生错误，都会导致写事件就绪，有来上述的理论基础，就可以开始写代码测试了，测试结果如下：
+
+连接成功时的 revents 日志信息：
+
+```c++
+ [TRACE][2022-08-17 05:56:52:869011Z][19517][EventLoop.cc:419][printActiveChannels]{ 6: OUT}
+```
+
+连接失败时的 revents 日志信息：
+
+```c++
+[TRACE][2022-08-17 05:54:44:003283Z][18547][EventLoop.cc:419][printActiveChannels]{ 6: OUT HUP ERR}
+```
+
+可以看到，连接失败（连接失败存在多种可能，例如：对端无服务进程监听，对端防火墙拦截，网络不通等）不仅会触发 EPOLLOUT 事件，还有可能触发 EPOLLHUP 和 EPOLLERR 事件，根据上述情况 Connector 做出如下处理。
+
+1. `EPOLLHUP`: 打印 WARN 警告信息
+2. `EPOLLERR`: 使用 `getsockopt(2)` 获取 socketFd 上的具体错误信息并记录 LOG_ERRNO 日志后使用定时器设定 retry，retry 初始等待时间为 500 毫秒，此后每 retry 一次，等待时间增加 1 倍，需要注意，发生 EPOLLERR 事件后不需要再额外处理 `EPOLLOUT` 事件，因为连接已经失败了。
+3. `EPOLLOUT`: 但上述 2 个事件没触发时，则处理 EPOLLOUT，调用 handleWrite 回调，在该回调中
+
+下面是我绘制的非阻塞 connect 的状态迁移图
 
 ![1661216268482](image/readme/1661216268482.png)
 
@@ -460,9 +492,9 @@ void onConnection(const TcpConnectionPtr& conn)
 
 When a client try to connect to a server, if client and server are both localhost, self-connection may happen(source port and destination port happened to be the same.) But my problem is how can self-connection be possible?
 
-原问题见 [https://stackoverflow.com/questions/16767113/linux-unix-socket-self-connection]()
+原问题见 [https://stackoverflow.com/questions/16767113/linux-unix-socket-self-connection]([https://stackoverflow.com/questions/16767113/linux-unix-socket-self-connection]())
 
-讨论中问题描述比较清楚的博文见 [http://sgros.blogspot.com/2013/08/tcp-client-self-connect.html]()
+讨论中问题描述比较清楚的博文见 [http://sgros.blogspot.com/2013/08/tcp-client-self-connect.html]([http://sgros.blogspot.com/2013/08/tcp-client-self-connect.html]())
 
 如果在 shell 中运行下列代码。
 
@@ -497,15 +529,13 @@ Proto Recv-Q Send-Q Local Address    Foreign Address  State
 tcp        0      0 127.0.0.1:50000  127.0.0.1:50000  ESTABLISHED
 ```
 
-并且使用 tcpdump 监控流量可以观察到发生了三次握手，所以到底发生了什么，简而言之，client connected to itself，下面是更多的解释。
-
-首先，我们从一个事实开始，当客户端（在本例中是 telent 应用程序）创建套接字并尝试连接到服务器时，内核会为其分配一个随机源端口号，这是因为每个 TCP 连接都用 4 元组唯一标识。
+并且使用 tcpdump 监控流量可以观察到发生了三次握手，所以到底发生了什么？简而言之，client connected to itself，下面继续讨论该问题。首先，从一个事实开始，当客户端（在本例中是 telent 应用程序）创建套接字并尝试连接到服务器时，内核会为其分配一个随机源端口号，这是因为每个 TCP 连接都用 4 元组唯一标识。
 
 ```c++
 (source IP, source port, destination IP, destination port)
 ```
 
-其中，三个参数是预先确定的，即 source IP, destination IP and destinationport，剩下的是必须以某种方式分配的源端口，通常情况下，应用程序将该任务留给内核，内核从临时端口范围内选取它（应用程序也可以使用 bind(2) 系统调用选择源端口，但很少这样做），那么这些临时端口在什么范围内呢？它们通常是high ports（数值较大的端口），我们可以通过查看 /proc file system 来查看范围，例如：
+其中，三个参数是预先确定的，即 source IP, destination IP and destinationport，剩下的是必须以某种方式分配的源端口，通常情况下，应用程序将该任务留给内核，内核从临时端口范围内选取它（应用程序也可以使用 bind(2) 系统调用选择源端口，但很少这样做），那么这些临时端口在什么范围内呢？它们通常是 high ports（数值较大的端口），我们可以通过查看 `/proc file system` 来查看范围，例如：
 
 ```c++
 cat /proc/sys/net/ipv4/ip_local_port_range 
@@ -520,7 +550,7 @@ cat /proc/sys/net/ipv4/ip_local_port_range
 2. 使用临时端口来监听服务器
 3. 只能在握手阶段发生，如果发现某些客户端使用某个临时端口并尝试连接到它，将被拒绝
 
-总结：不要为服务器使用临时端口！否则，将遇到临一些非常有趣的行为发生，这些行为通常是不确定的且难以调试的。
+总结：不要为服务器使用临时端口！否则，将面临一些非常有趣的行为发生，这些行为通常是不确定且难以调试的。
 
 
 ## **learn 目录**
