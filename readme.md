@@ -463,7 +463,7 @@ void onConnection(const TcpConnectionPtr& conn)
 3. **A socket using a non-blocking connect has completed the connection, or the connect has failed.**
 4. **A socket error is pending. A write operation on the socket will not block and will return an error (–1) with errno set to the specific error condition.**
 
-由上述的 3 和 4 条可以知道，无论 connect 连接是否建立成功又或者发生错误，都会导致写事件就绪，有来上述的理论基础，就可以开始写代码测试了，测试结果如下：
+由上述的 3 和 4 条可以知道，无论 connect 连接是否建立成功又或者发生错误，都会导致写事件就绪，有了上述的理论基础，就可以开始写代码测试了，测试结果如下：
 
 连接成功时的 revents 日志信息：
 
@@ -480,12 +480,10 @@ void onConnection(const TcpConnectionPtr& conn)
 可以看到，连接失败（连接失败存在多种可能，例如：对端无服务进程监听，对端防火墙拦截，网络不通等）不仅会触发 EPOLLOUT 事件，还有可能触发 EPOLLHUP 和 EPOLLERR 事件，根据上述情况 Connector 做出如下处理。
 
 1. `EPOLLHUP`: 打印 WARN 警告信息
-2. `EPOLLERR`: 使用 `getsockopt(2)` 获取 socketFd 上的具体错误信息并记录 LOG_ERRNO 日志后使用定时器设定 retry，retry 初始等待时间为 500 毫秒，此后每 retry 一次，等待时间增加 1 倍，需要注意，发生 EPOLLERR 事件后不需要再额外处理 `EPOLLOUT` 事件，因为连接已经失败了。
-3. `EPOLLOUT`: 但上述 2 个事件没触发时，则处理 EPOLLOUT，调用 handleWrite 回调，在该回调中
+2. `EPOLLERR`: 使用 `getsockopt(2)` 获取 socketFd 上的具体错误信息并记录 LOG_ERROR 日志后使用定时器设定 retry，retry 初始等待时间为 500 毫秒，此后每 retry 一次，等待时间增加 1 倍，需要注意，发生 `EPOLLERR `事件后不需要再额外处理 `EPOLLOUT` 事件，因为连接已经失败了。
+3. `EPOLLOUT`: 如果上述 2 个事件没触发时，则处理 `EPOLLOUT`，调用 handleWrite 回调，在该回调中调用 getsockopt(2) 判断连接是否真正成功，如果连接失败则 retry，如果连接成功则将连接状体迁移至 kConnected.
 
 下面是我绘制的非阻塞 connect 的状态迁移图
-
-![1661216268482](image/readme/1661216268482.png)
 
 
 #### (2) Self-connection 问题
