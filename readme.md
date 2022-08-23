@@ -427,7 +427,8 @@ Read the section named "The special problem of accept()ing when you can't" in li
    正常情况下 TCP 通过四元组标识一个已经创建的连接，当服务器或客户端收到一个新四元组（服务器或客户端本地没有这个连接）的非 SYN 首包就会丢弃该报文并回复一个 RST 报文。举个例子：位于不同机器上的用户端和服务器在正常连接的情况下，突然拔掉网线，再重启服务端。在这个过程中客户端感受不到服务端的异常，还保持着连接（此时就是半连接状态）客户端向该连接写数据，会收到服务端回复的 RST 报文，如果客户端再收到 RST 报文后继续向该连接写数据，会触发 SIGPIPE 信号，默认情况下会导致客户端异常退出。
 
 三、在网络库中可能触发 SIGPIPE 信号的情况。
-    假设服务器繁忙，没有及时处理对方断开连接的事件，就有可能出现在连接断开后继续发送数据的情况，下面的例子模拟了这种情况。
+
+假设服务器繁忙，没有及时处理对方断开连接的事件，就有可能出现在连接断开后继续发送数据的情况，下面的例子模拟了这种情况。
 
 ```c++
 void onConnection(const TcpConnectionPtr& conn)
@@ -441,9 +442,19 @@ void onConnection(const TcpConnectionPtr& conn)
 }
 ```
 
-**四、SIGPIPE 信号触发测试代码** 
+**四、SIGPIPE 信号触发测试代码**
 
 详细的测试代码见 `src/learn/iomultiplexing/epoll_thread` 目录下的 SIGPIPE test1, test2，在测试代码中还讨论了 `shutdown(sock, SHUT_RD);` 的行为，及其平台相关性。 `shutdown(sock, SHUT_RD);` 的平台相关性会影响到 RST 报文的发送。
+
+### Connector 类中问题讨论
+
+#### (1) 非阻塞 connect 状态机
+
+
+![1661215959148](image/readme/1661215959148.png)
+
+
+#### (2) Self-connection 问题
 
 
 ## **learn 目录**

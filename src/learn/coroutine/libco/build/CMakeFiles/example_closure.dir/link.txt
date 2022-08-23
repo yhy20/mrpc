@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/example_closure.dir/example_closure.cpp.o  -o ../bin/example_closure  libcolib.a -lpthread -ldl 

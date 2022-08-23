@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/mrpc/src/learn/coroutine/libco/co_routine.h
+stdint.h
+-
+sys/poll.h
+-
+pthread.h
+-
+
+/root/mrpc/src/learn/coroutine/libco/co_routine_inner.h
+co_routine.h
+/root/mrpc/src/learn/coroutine/libco/co_routine.h
+coctx.h
+/root/mrpc/src/learn/coroutine/libco/coctx.h
+
+/root/mrpc/src/learn/coroutine/libco/coctx.h
+stdlib.h
+-
+
+/root/mrpc/src/learn/coroutine/libco/example_copystack.cpp
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+sys/time.h
+-
+errno.h
+-
+string.h
+-
+coctx.h
+/root/mrpc/src/learn/coroutine/libco/coctx.h
+co_routine.h
+/root/mrpc/src/learn/coroutine/libco/co_routine.h
+co_routine_inner.h
+/root/mrpc/src/learn/coroutine/libco/co_routine_inner.h
+

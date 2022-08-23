@@ -47,13 +47,7 @@ public:
      * 
      */
     void stop();
-
-    /**
-     * @brief 
-     *
-     * 
-     * @return const InetAddress& 
-     */
+  
     const InetAddress& serverAddress() const { return m_serverAddr; }
 
 

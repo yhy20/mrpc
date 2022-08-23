@@ -9,6 +9,12 @@ static void sigHandler(int sig)
 /// 程序清单 20-1: 为 SIGINT 信号注册一个处理程序
 int main(void)
 {
+    /**
+     * Invaocation of a signal handler may interrupt the main program
+     * flow at any time; the kernel calls the handler on the process's
+     * behalf, and when the handler returns, execution of the program 
+     * resumes at the point where the handler interruptd it.
+     */
     if(SIG_ERR == signal(SIGINT, sigHandler))
         LOG_FATAL("signal() error!");
     
