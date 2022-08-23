@@ -458,10 +458,10 @@ void onConnection(const TcpConnectionPtr& conn)
 
 根据《unix 网络编程》A socket is ready for writing if any of the following four conditions is true.
 
-1. The number of bytes of available space in the socket send buffer is greater than or equal to the current size of the low-water mark for the socket send buffer and either: (i) the socket is connected, or (ii) the socket does not require a connection (e.g., UDP). This means that if we set the socket to nonblocking, a write operation will not block and will return a positive value (e.g., the number of bytes accepted by the transport layer).
-2. The write half of the connection is closed. A write operation on the socket will generate SIGPIPE.
-3. A socket using a non-blocking connect has completed the connection, or the connect has failed.
-4. A socket error is pending. A write operation on the socket will not block and will return an error (–1) with errno set to the specific error condition.
+1. **The number of bytes of available space in the socket send buffer is greater than or equal to the current size of the low-water mark for the socket send buffer and either: (i) the socket is connected, or (ii) the socket does not require a connection (e.g., UDP). This means that if we set the socket to nonblocking, a write operation will not block and will return a positive value (e.g., the number of bytes accepted by the transport layer).**
+2. **The write half of the connection is closed. A write operation on the socket will generate SIGPIPE.**
+3. **A socket using a non-blocking connect has completed the connection, or the connect has failed.**
+4. **A socket error is pending. A write operation on the socket will not block and will return an error (–1) with errno set to the specific error condition.**
 
 由上述的 3 和 4 条可以知道，无论 connect 连接是否建立成功又或者发生错误，都会导致写事件就绪，有来上述的理论基础，就可以开始写代码测试了，测试结果如下：
 
