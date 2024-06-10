@@ -44,7 +44,7 @@ set(CXX_FLAGS
     -Wwrite-strings
     -march=native
     # -MMD
-    -std=c++11
+    -std=c++17
     -rdynamic
  )
 
@@ -75,7 +75,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 include_directories(${PROJECT_SOURCE_DIR}/src/base)
 include_directories(${PROJECT_SOURCE_DIR}/src/net)
 include_directories(${PROJECT_SOURCE_DIR}/src/base/queue)
-include_directories(${PROJECT_SOURCE_DIR}/third/libco/include)
+#include_directories(${PROJECT_SOURCE_DIR}/third/libco/include)
 # include_directories(/usr/local/boost/include)
 # include_directories(${PROJECT_SOURCE_DIR}/src/mrpc)
 # include_directories(${PROJECT_SOURCE_DIR}/example/protobuf)
@@ -83,10 +83,10 @@ include_directories(${PROJECT_SOURCE_DIR}/third/libco/include)
 
 # 设置库文件搜索路径 -L
 link_directories(${PROJECT_SOURCE_DIR}/lib)
-link_directories(${PROJECT_SOURCE_DIR}/third/libco/lib)
+#link_directories(${PROJECT_SOURCE_DIR}/third/libco/lib)
 
 # src 中包含了 mprpc 框架的所有相关代码
 add_subdirectory(src)
-add_subdirectory(example)
+# add_subdirectory(example)
 # example 中包含了 mprpc 框架使用的示例代码
 # add_subdirectory(example)

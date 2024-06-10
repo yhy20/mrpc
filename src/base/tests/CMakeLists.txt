@@ -4,7 +4,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/tests/base)
 macro(add_mrpc_base_test TEST_TARGET)
     string(TOLOWER ${TEST_TARGET} EXECUTABLE_FILE_NAME)
     add_executable(${EXECUTABLE_FILE_NAME} "${TEST_TARGET}.cc")
-    target_link_libraries(${EXECUTABLE_FILE_NAME} mrpc_base boost_unit_test_framework pthread)
+    # target_link_libraries(${EXECUTABLE_FILE_NAME} mrpc_base boost_unit_test_framework pthread)
+    target_link_libraries(${EXECUTABLE_FILE_NAME} mrpc_base pthread)
 endmacro(add_mrpc_base_test)
 
 add_mrpc_base_test(Atomic_test)
@@ -31,7 +32,7 @@ add_mrpc_base_test(TimeZone_test)
 
 add_mrpc_base_test(LogStream_bench)
 
-add_mrpc_base_test(LogStream_test)
+# add_mrpc_base_test(LogStream_test)
 
 add_mrpc_base_test(Logging_test)
 

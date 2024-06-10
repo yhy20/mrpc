@@ -5,7 +5,8 @@
 #include <vector>
 #include <functional>
 
-#include <boost/any.hpp>
+//#include <boost/any.hpp>
+#include <any>
 
 #include "Mutex.h"
 #include "TimerId.h"
@@ -183,17 +184,20 @@ public:
     /**
      * @brief 非线程安全，为用户预留的冗余，用于存放用户数据
      */
-    void setContext(const boost::any& context) { m_context = context; }
+    //void setContext(const boost::any& context) { m_context = context; }
+    void setContext(const std::any& context) { m_context = context; }
 
     /**
      * @brief 非线程安全，取出用户数据
      */
-    const boost::any& getContext() const { return m_context; }
+    //const boost::any& getContext() const { return m_context; }
+    const std::any& getContext() const { return m_context; }
 
     /**
      * @brief 非线程安全，获取可修改的用户数据
      */
-    boost::any* getMutableContext() { return &m_context; }
+    //boost::any* getMutableContext() { return &m_context; }
+    std::any* getMutableContext() { return &m_context; }
 
     /**
      * @brief 获取当前线程的 EventLoop，若当前线程未创建 Eventloop 则返回 nullptr
@@ -226,7 +230,8 @@ private:
     const pid_t         m_threadId;               // EventLoop 所属线程 Id
     TimeStamp           m_pollReturnTime;         // poll 调用的返回时刻
     mutable Mutex       m_mutex;                  // 互斥锁
-    boost::any          m_context;                // 为用户预留的冗余空间
+    //boost::any          m_context;                // 为用户预留的冗余空间
+    std::any          m_context;                // 为用户预留的冗余空间
     Channel*            m_currentActiveChannel;   // 当前正在处理的活跃 Channel
     ChannelList         m_activeChannels;         // 活跃 Channel 列表
 
