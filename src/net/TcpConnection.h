@@ -2,8 +2,7 @@
 #define __MRPC_NET_TCPCONNECTION_H__
 
 #include <memory>
-
-#include <boost/any.hpp>
+#include <any>
 
 #include "Types.h"
 #include "Buffer.h"
@@ -150,9 +149,9 @@ public:
     
     /// 下面一组函数作为冗余，是提供给用户存储需要的数据
 
-    void setContext(const boost::any& context) { m_context = context; }
-    const boost::any& getContext() const { return m_context; } 
-    boost::any* getMutableContext() { return &m_context; }
+    void setContext(const std::any& context) { m_context = context; }
+    const std::any& getContext() const { return m_context; } 
+    std::any* getMutableContext() { return &m_context; }
 
     /// 下列一组设置回调函数都是非线程安全的
 
@@ -230,7 +229,7 @@ private:
     size_t              m_highWaterMark;    // 高水位回调
     Buffer              m_inputBuffer;      // Tcp 输入缓冲  
     Buffer              m_outputBuffer;     // Tcp 输出缓冲
-    boost::any          m_context;          // 用于数据冗余
+    std::any            m_context;          // 用于数据冗余
 
     std::unique_ptr<Socket>     m_socket;   // socketFd 包装类     
     std::unique_ptr<Channel>    m_channel;  // socketFd Channel
